@@ -67,11 +67,14 @@ Constraints:
 
 JSON:"""
 
-    response = client.chat.completions.create(
-        model="llama-3.3-70b-versatile",
-        messages=[{"role": "user", "content": prompt}],
-        temperature=0.7
-    )
+    try:
+        response = client.chat.completions.create(
+            model="openai/gpt-oss-120b",
+            messages=[{"role": "user", "content": prompt}],
+            temperature=0.7
+        )
+    except Exception:
+        return _default_strategy(symbols)
 
     try:
         content = response.choices[0].message.content.strip()
@@ -154,10 +157,13 @@ broadening it to a basket would improve robustness.
 
 Response:"""
 
-    response = client.chat.completions.create(
-        model="llama-3.3-70b-versatile",
-        messages=[{"role": "user", "content": prompt}],
-        temperature=0.7
-    )
-    return response.choices[0].message.content
+    try:
+        response = client.chat.completions.create(
+            model="openai/gpt-oss-120b",
+            messages=[{"role": "user", "content": prompt}],
+            temperature=0.7
+        )
+        return response.choices[0].message.content
+    except Exception:
+        return "Unable to generate critique at this time. The Groq API may be unavailable or the API key may be invalid."
 

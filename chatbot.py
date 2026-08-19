@@ -377,7 +377,7 @@ while True:
     chat_messages.append({"role": "user", "content": user_input})
 
     stream = client.chat.completions.create(
-        model="llama-3.3-70b-versatile",
+        model="openai/gpt-oss-120b",
         messages=chat_messages,
         stream=True
     )

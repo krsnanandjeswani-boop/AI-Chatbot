@@ -16,7 +16,7 @@ backtesting, optimization, and genetic evolution.
 
 ## :sparkles: What It Does
 
-This AI combines a **Llama-3.3-70B LLM** (via Groq) with real-time market data from:
+This AI combines a **GPT-OSS-120B LLM** (via Groq) with real-time market data from:
 - :chart_with_upwards_trend: **Yahoo Finance** — price history, dividends, splits
 - :newspaper: **Finnhub** — real-time quotes, company news
 - :bank: **Alpha Vantage** — company overviews, fundamentals
