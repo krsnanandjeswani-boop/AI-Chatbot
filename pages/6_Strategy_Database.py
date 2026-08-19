@@ -42,7 +42,7 @@ else:
         for s in strategies
     ])
 
-    st.dataframe(df, use_container_width=True, hide_index=True)
+    st.dataframe(df, width="stretch", hide_index=True)
 
     st.markdown("---")
     selected_name = st.selectbox("Select a strategy to inspect", options=df["name"].tolist(), index=0)

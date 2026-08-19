@@ -106,7 +106,7 @@ with tab1:
             with st.spinner(f"Fetching {symbol} data..."):
                 fig = plotly_price_chart(symbol.upper(), period, show_indicators)
             if fig:
-                st.plotly_chart(fig, use_container_width=True)
+                st.plotly_chart(fig, width="stretch")
             else:
                 st.error(f"No data available for {symbol.upper()}")
         else:
@@ -139,6 +139,6 @@ with tab2:
                 fig = plotly_strategy_chart(strat_symbol.upper(), strategy, strat_period)
             if fig:
                 st.session_state["last_strategy"] = strategy
-                st.plotly_chart(fig, use_container_width=True)
+                st.plotly_chart(fig, width="stretch")
             else:
                 st.error("Failed to generate strategy chart.")

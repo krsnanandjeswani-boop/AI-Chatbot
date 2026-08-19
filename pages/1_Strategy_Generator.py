@@ -74,7 +74,7 @@ if submitted:
     st.markdown("---")
 
     # --- Quick backtest ---
-    if st.button("🚀 Run Quick Backtest on This Strategy", use_container_width=True):
+    if st.button("🚀 Run Quick Backtest on This Strategy", width="stretch"):
         universe = strategy.get("universe", ["SPY"])
         sym = universe[0] if universe else "SPY"
         with st.spinner(f"Backtesting {strategy.get('name')} on {sym}..."):
@@ -90,7 +90,7 @@ if submitted:
             kpi4.metric("Profit Factor", f"{metrics.get('profit_factor', 0):.2f}")
 
     # --- Critique ---
-    if st.button("🔍 Get LLM Critique", use_container_width=True):
+    if st.button("🔍 Get LLM Critique", width="stretch"):
         with st.spinner("Analyzing strategy performance..."):
             critique = critique_strategy(strategy, {
                 "cagr": 0, "sharpe": 0, "max_drawdown": 0,

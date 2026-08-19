@@ -68,7 +68,7 @@ if submitted:
                 "profit_factor": "Profit Factor",
                 "total_trades": "Trades",
             }),
-            use_container_width=True,
+            width="stretch",
             hide_index=True,
             column_config={
                 "Sharpe": st.column_config.NumberColumn("Sharpe", format="%.2f"),

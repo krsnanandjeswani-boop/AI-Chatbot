@@ -107,7 +107,7 @@ if submitted:
                 if "folds" in wf:
                     import pandas as pd
                     fold_df = pd.DataFrame(wf["folds"])
-                    st.dataframe(fold_df, use_container_width=True)
+                    st.dataframe(fold_df, width="stretch")
 
         with tab3:
             if "error" in mc:
@@ -125,14 +125,14 @@ if submitted:
         # --- Save to DB ---
         col1, col2 = st.columns(2)
         with col1:
-            if st.button("💾 Save Strategy to Database", use_container_width=True, key="save_btn"):
+            if st.button("💾 Save Strategy to Database", width="stretch", key="save_btn"):
                 from strategy_database import save_strategy
                 from final import detect_market_regime
                 regime = detect_market_regime(universe[0])
                 save_strategy(strategy, report, regime, "Full validation via web")
                 st.success("✅ Strategy saved to database!")
         with col2:
-            if st.button("📋 Copy Full Report", use_container_width=True, key="copy_btn"):
+            if st.button("📋 Copy Full Report", width="stretch", key="copy_btn"):
                 st.code(format_report(report), language="text")
 
 else:
