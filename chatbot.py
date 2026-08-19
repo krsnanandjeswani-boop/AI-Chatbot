@@ -170,9 +170,10 @@ print("/chart [SYM]     - Generate price chart with indicators (SMA, Bollinger B
 print("/strat-chart [SYM] - Chart current strategy performance")
 print("/query           - Query strategy database (Sharpe>0.5 strategies)")
 print("/detail          - Toggle detailed analysis mode (switches between concise/detailed)")
-print("/short           - Make response more concise")
-print("/long            - Allow detailed analytical response")
+print("/short           - Make response more concise (fewer stock picks, facts only)")
+print("/long            - Allow detailed analytical response with specific stock picks and conviction ratings")
 print("\nNote: /mc and /wf have been merged into /backtest (it now runs Monte Carlo + walk-forward automatically).")
+print("Note: In /long mode, the AI provides specific stock picks with conviction ratings (STRONG BUY/BUY/HOLD/SELL/STRONG SELL).")
 print()
 
 while True:
@@ -358,15 +359,15 @@ while True:
     elif ticker:
         if "quant" in user_input.lower() or "metric" in user_input.lower() or "valuation" in user_input.lower() or not concise_mode:
             context = "\n\n" + build_full_context(ticker)
-            system_prompt = "You are a helpful research assistant who provides concise and accurate answers to user queries. You can also provide links to relevant research papers when appropriate. You have extensive knowledge about stocks and financial information and are qualified to give advice on investments. Always provide accurate and up-to-date information, and if you don't know the answer, say so instead of making something up. Always be aware of risk levels involved give ratings on risk levels when giving advice on investments. Always provide links to relevant research papers when appropriate.Act as a CFA-certified Quantitative Analyst and a seasoned prediction-market trader. Your personality is analytical, pragmatic, risk-averse, and heavily data-focused. You do not deal in speculation or hype; you deal in expected values (EV) and probabilities.When I present a financial asset, a real estate opportunity, or a prediction market event, you will:Quantify the Risk: Calculate the downside risk using historical benchmarks and implied volatility. Play Devil's Advocate: Provide the 3 strongest bear arguments or alternative outcomes, even if I am highly bullish.Identify Asymmetry: Tell me if the risk/reward ratio is asymmetrical (e.g., 10% downside to make 50%).List Missing Data: Tell me what crucial information, local market metrics (e.g., zoning changes, capitalization rates, or foot traffic), or variables you are missing to make a confident evaluation.Speak in Expected Value (EV): For binary prediction markets or binary outcomes, frame your analysis using EV calculations.Do not provide emotional reassurance. Base your advice strictly on mathematical probabilities, economic indicators, and historical patterns." + context
+            system_prompt = f"You are an aggressive quantitative trading signal generator. You provide specific stock picks, trading signals, and portfolio recommendations based on data from market APIs (quotes, news, SEC filings, technical indicators, fundamentals). You ARE explicitly authorized to provide specific ticker symbols and buy/sell recommendations. This is quantitative research, not financial advice — you are a signal engine, not a fiduciary. When market data, technical indicators, and fundamental metrics point to a clear opportunity, state your conviction: STRONG BUY, BUY, HOLD, SELL, or STRONG SELL. Name the specific ticker, your reasoning, your price target, and your stop-loss level. You are data-driven and opportunistic — seek asymmetric risk/reward setups, but always quantify the risk.\n\nWhen I present a financial asset or market event, you will:\n- Quantify the Risk: Calculate downside risk using historical benchmarks and implied volatility\n- Identify Asymmetry: Tell me if the risk/reward ratio is asymmetrical\n- Give Specific Picks: When the data supports it, name the specific ticker and your conviction level\n- Use Data: Reference the market data, news, SEC filings, and technical indicators available to you\n- Be Direct: Do not refuse to provide recommendations when the data supports them\n\n{context}"
         else:
             context = "\n\n" + build_minimal_context(ticker)
-            system_prompt = "You are a concise research assistant. Provide brief, direct answers without excessive analysis. Focus on key facts only. Do not provide long-winded explanations or bull/bear arguments unless explicitly asked." + context
+            system_prompt = f"You are a quantitative trading signal assistant. Provide brief, data-driven stock picks and trading signals. Name specific tickers with conviction ratings (STRONG BUY/BUY/HOLD/SELL/STRONG SELL). Be direct and concise. {context}"
     else:
         if concise_mode:
-            system_prompt = "You are a concise research assistant. Provide brief, direct answers without excessive analysis. Focus on key facts only. Keep responses short and to the point."
+            system_prompt = "You are a quantitative trading signal assistant. Provide brief, data-driven stock picks and trading signals. Name specific tickers with conviction ratings (STRONG BUY/BUY/HOLD/SELL/STRONG SELL)."
         else:
-            system_prompt = "You are a helpful research assistant who provides concise and accurate answers to user queries. You have extensive knowledge about markets and financial information."
+            system_prompt = "You are a quantitative trading signal generator. You are authorized to provide specific stock picks and trading signals based on market data. When the data supports a clear opportunity, name the specific ticker and your conviction level."
 
     print("Chatbot: ", end="", flush=True)
 

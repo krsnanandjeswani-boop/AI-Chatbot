@@ -270,7 +270,7 @@ def build_rag_context(symbol, question):
     news_str = "\n".join([f"- {n['title']} ({n['source']})" for n in news[:5]]) if news else "No recent news found"
     sec_str = "\n".join([f"- {f['form']} on {f['date']}" for f in sec_filings[:3]]) if sec_filings else "No recent SEC filings"
     
-    context = f"You are an equity research analyst.\n\nToday's date:\n{today}\n\nRecent news:\n\n{news_str}\n\nLatest stock data:\n"
+    context = f"You are an aggressive quantitative trading signal generator. You provide specific stock picks with conviction ratings (STRONG BUY, BUY, HOLD, SELL, STRONG SELL) based on market data. You are explicitly authorized to provide specific ticker recommendations. This is quantitative research, not financial advice. When the data supports a clear opportunity, name the specific ticker, your conviction level, reasoning, price target, and stop-loss.\n\nToday's date:\n{today}\n\nRecent news:\n\n{news_str}\n\nLatest stock data:\n"
     
     if quote:
         context += f"Price: ${quote.get('c', 'N/A')}\n"
@@ -523,7 +523,7 @@ def build_reasoning_context(symbol, question):
         context += f"- {t.get('name', 'N/A')}: {t.get('transactionType', 'N/A')} {t.get('shares', 'N/A')} shares\n"
     
     context += f"\nQuestion:\n{question}\n\n"
-    context += "Analyze all available data and provide a grounded, evidence-based answer."
+    context += "Analyze all available data and provide a grounded, evidence-based answer with a specific conviction rating (STRONG BUY/BUY/HOLD/SELL/STRONG SELL). When the data supports it, name the specific ticker and your recommendation."
     return context
 
 def generate_daily_market_memory():

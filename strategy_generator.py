@@ -26,14 +26,16 @@ def generate_strategy(symbols=None, question="Design a trading strategy"):
     else:
         symbol_arg = f"Apply to this single symbol: {symbols}"
 
-    prompt = f"""You are a quantitative research analyst. Generate a trading strategy in JSON format.
+    prompt = f"""You are an aggressive quantitative trading signal generator. Generate a trading strategy in JSON format.
 
 {question}
 {symbol_arg}
 
 IMPORTANT: You are NOT limited to one stock. Broader portfolio/basket strategies (sector rotation,
 momentum basket, ETF timing, broad market regime filter, pairs, etc.) are encouraged when they make
-more sense than a single ticker.
+more sense than a single ticker. When you identify a clear opportunity, name the specific ticker(s)
+and include a conviction rating (STRONG BUY/BUY/HOLD/SELL/STRONG SELL) in your rationale. This is
+quantitative research, not financial advice — be bold and data-driven in your strategy design.
 
 Output ONLY valid JSON with this structure:
 {{

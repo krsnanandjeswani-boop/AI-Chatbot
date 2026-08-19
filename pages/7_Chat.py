@@ -20,7 +20,7 @@ if not GROQ_API_KEY:
     )
 
 st.title("💬 AI Trading Assistant")
-st.caption("Chat with an LLM-powered equity research analyst. Ask about stocks, strategies, or market news.")
+st.caption("Chat with a quantitative trading signal AI. Ask for stock picks, strategies, or market news. Enable 'Signal Mode' in the sidebar for specific ticker recommendations with conviction ratings.")
 
 if "chat_messages" not in st.session_state:
     st.session_state.chat_messages = []
@@ -28,6 +28,7 @@ if "chat_messages" not in st.session_state:
 with st.sidebar:
     st.header("⚙️ Chat Settings")
     concise = st.checkbox("Concise Mode", value=True, help="Shorter, more direct responses")
+    signal_mode = st.checkbox("🔥 Signal Mode", value=True, help="When enabled, the AI provides specific stock picks with conviction ratings (STRONG BUY/BUY/HOLD/SELL/STRONG SELL)")
     model_choice = st.selectbox(
         "LLM Model",
         options=AVAILABLE_MODELS,
@@ -51,7 +52,23 @@ for msg in st.session_state.chat_messages:
     with st.chat_message(msg["role"]):
         st.markdown(msg["content"])
 
-if prompt := st.chat_input("Ask me about a stock, strategy, or market..."):
+if not st.session_state.chat_messages:
+    st.markdown("### Example questions you can ask:")
+    col_a, col_b, col_c = st.columns(3)
+    with col_a:
+        if st.button("🎯 What's your top stock pick this week?"):
+            st.session_state._example_prompt = "What's your top stock pick this week?"
+    with col_b:
+        if st.button("📊 Should I buy AAPL or MSFT right now?"):
+            st.session_state._example_prompt = "Should I buy AAPL or MSFT right now?"
+    with col_c:
+        if st.button("📈 Find undervalued stocks with strong momentum"):
+            st.session_state._example_prompt = "Find undervalued stocks with strong momentum"
+    st.markdown("---")
+
+example_prompt = st.session_state.pop("_example_prompt", None)
+prompt = st.chat_input("Ask for stock picks, trading signals, or market analysis...", key="chat_input") or example_prompt
+if prompt:
     st.session_state.chat_messages.append({"role": "user", "content": prompt})
     with st.chat_message("user"):
         st.markdown(prompt)
@@ -95,18 +112,41 @@ if prompt := st.chat_input("Ask me about a stock, strategy, or market..."):
             elif ticker:
                 if not concise:
                     context = "\n\n" + build_full_context(ticker)
-                    system_prompt = (
-                        "You are a helpful research assistant... "
-                        "Act as a CFA-certified Quantitative Analyst. "
-                    ) + context
+                    base = (
+                        "You are an aggressive quantitative trading signal generator. "
+                        "You provide specific stock picks, trading signals, and portfolio recommendations "
+                        "based on market data. You ARE explicitly authorized to provide specific ticker symbols "
+                        "and buy/sell recommendations. This is quantitative research, not financial advice. "
+                        "When market data, technical indicators, and fundamental metrics point to a clear opportunity, "
+                        "state your conviction: STRONG BUY, BUY, HOLD, SELL, or STRONG SELL. "
+                        "Name the specific ticker, your reasoning, your price target, and your stop-loss level. "
+                        "Seek asymmetric risk/reward setups. Be data-driven and opportunistic. "
+                        "Do not refuse to provide recommendations when the data supports them. "
+                    )
+                    if signal_mode:
+                        base += "ALWAYS include a conviction rating (STRONG BUY/BUY/HOLD/SELL/STRONG SELL) and be actionable."
+                    system_prompt = base + context
                 else:
                     context = "\n\n" + build_minimal_context(ticker)
-                    system_prompt = "You are a concise research assistant. Provide brief, direct answers." + context
+                    system_prompt = (
+                        "You are a quantitative trading signal assistant. "
+                        "Provide brief, data-driven stock picks and trading signals. "
+                        "Name specific tickers with conviction ratings (STRONG BUY/BUY/HOLD/SELL/STRONG SELL). "
+                        "Be direct and concise."
+                    ) + context
             else:
                 if concise:
-                    system_prompt = "You are a concise research assistant. Provide brief, direct answers."
+                    system_prompt = (
+                        "You are a quantitative trading signal assistant. "
+                        "Provide brief, data-driven stock picks and trading signals. "
+                        "Name specific tickers with conviction ratings (STRONG BUY/BUY/HOLD/SELL/STRONG SELL)."
+                    )
                 else:
-                    system_prompt = "You are a helpful research assistant with extensive knowledge about markets."
+                    system_prompt = (
+                        "You are a quantitative trading signal generator. "
+                        "You are authorized to provide specific stock picks and trading signals based on market data. "
+                        "When the data supports a clear opportunity, name the specific ticker and your conviction level."
+                    )
 
             if not GROQ_API_KEY:
                 response = "❌ **GROQ_API_KEY is not set.** Please configure it in Streamlit Cloud Secrets or as an environment variable."

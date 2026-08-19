@@ -23,6 +23,14 @@ This AI combines a **GPT-OSS-120B LLM** (via Groq) with real-time market data fr
 - :mag_right: **SEC EDGAR** — 10-K / 10-Q filings
 - :globe_with_meridians: **NewsAPI** — market-wide headlines
 
+The AI generates **specific stock picks with conviction ratings** (STRONG BUY / BUY / HOLD / SELL / STRONG SELL),
+designs and validates trading strategies, and evolves robust portfolios through genetic algorithms.
+- :chart_with_upwards_trend: **Yahoo Finance** — price history, dividends, splits
+- :newspaper: **Finnhub** — real-time quotes, company news
+- :bank: **Alpha Vantage** — company overviews, fundamentals
+- :mag_right: **SEC EDGAR** — 10-K / 10-Q filings
+- :globe_with_meridians: **NewsAPI** — market-wide headlines
+
 ---
 
 ## :gear: Core Capabilities
@@ -36,17 +44,18 @@ This AI combines a **GPT-OSS-120B LLM** (via Groq) with real-time market data fr
 | **Strategy Database** | SQLite-backed storage and querying of tested strategies by Sharpe ratio | :white_check_mark: |
 | **Price Charts** | Interactive charts with SMA, Bollinger Bands, RSI, MACD indicators | :white_check_mark: |
 | **Market Memory** | Daily market summary (SPY, QQQ, Oil, Gold, BTC) + top news | :white_check_mark: |
-| **LLM Chat** | Direct Q&A with the AI research assistant | :white_check_mark: |
+| **LLM Chat** | Direct Q&A — ask for stock picks, trading signals, or market analysis with conviction ratings | :white_check_mark: |
 
 ---
 
 ## :clipboard: How It Works
 
-1. **Generate** — The LLM designs a strategy (entry/exit rules, universe, risk management) based on your prompt and market data context.
+1. **Strategy Generator** — The LLM designs a strategy (entry/exit rules, universe, risk management) based on your prompt and market data context.
 2. **Backtest** — The strategy is validated across multiple dimensions: in-sample performance, walk-forward out-of-sample testing, and Monte Carlo risk simulation.
 3. **Verdict** — Each strategy receives a verdict: `CONFIRMED`, `CONDITIONAL`, or `REJECTED` based on Sharpe ratio, drawdown, and walk-forward consistency.
 4. **Optimize / Evolve** — Refine parameters via grid search or genetic algorithm to maximize robustness.
-5. **Save & Query** — Persisted strategies can be compared and queried from the database.
+5. **Chat for Picks** — Ask the LLM chat for specific stock picks — it uses live market data and returns conviction-rated recommendations (STRONG BUY/BUY/HOLD/SELL/STRONG SELL).
+6. **Save & Query** — Persisted strategies can be compared and queried from the database.
 
 ---
 
