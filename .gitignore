@@ -1,0 +1,28 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+*.egg-info/
+dist/
+build/
+.venv/
+venv/
+
+# Local data / databases
+*.db
+*.sqlite
+*.sqlite3
+
+# Cache and temp files
+events/
+*.png
+*.txt
+daily_market_memory.txt
+
+# Environment
+.env
+.env.*
+
+# Claude local settings (contains API keys)
+.claude/
