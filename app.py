@@ -1,72 +1,140 @@
 import streamlit as st
 
 st.set_page_config(
-    page_title="AI Trading Research Assistant",
-    page_icon="🤖",
+    page_title="Atlas — AI Trading Research",
+    page_icon="⚡",
     layout="wide",
+    initial_sidebar_state="expanded",
 )
 
+# Clean, professional CSS (Claude-inspired)
 st.markdown("""
-# :robot_face: AI Trading Research Assistant
+<style>
+    /* Hide Streamlit branding */
+    #MainMenu {visibility: hidden;}
+    footer {visibility: hidden;}
+    header {visibility: hidden;}
+    
+    /* Main container */
+    .block-container {
+        padding-top: 2rem;
+        padding-bottom: 2rem;
+        max-width: 1100px;
+    }
+    
+    /* Headers */
+    h1 {
+        font-weight: 600;
+        letter-spacing: -0.02em;
+        color: #FFFFFF;
+    }
+    h2 {
+        font-weight: 600;
+        letter-spacing: -0.01em;
+        color: #FFFFFF;
+        margin-top: 2rem;
+    }
+    h3 {
+        font-weight: 600;
+        color: #FFFFFF;
+    }
+    
+    /* Cards */
+    .stMetric {
+        background: #1A1A1A;
+        border: 1px solid #2A2A2A;
+        padding: 1rem;
+        border-radius: 8px;
+    }
+    
+    /* Buttons */
+    .stButton > button {
+        background: linear-gradient(135deg, #D97757 0%, #B85D42 100%);
+        color: white;
+        border: none;
+        border-radius: 6px;
+        font-weight: 500;
+        transition: all 0.2s ease;
+    }
+    .stButton > button:hover {
+        background: linear-gradient(135deg, #E88A6B 0%, #D97757 100%);
+        box-shadow: 0 4px 12px rgba(217, 119, 87, 0.3);
+    }
+    
+    /* Inputs */
+    .stTextInput > div > div > input,
+    .stTextArea > div > div > textarea,
+    .stSelectbox > div > div > select {
+        background-color: #1A1A1A;
+        border: 1px solid #2A2A2A;
+        border-radius: 6px;
+        color: #E8E8E8;
+    }
+    
+    /* Tabs */
+    .stTabs [data-baseweb="tab-list"] {
+        gap: 8px;
+        background-color: transparent;
+    }
+    .stTabs [data-baseweb="tab"] {
+        background-color: #1A1A1A;
+        border: 1px solid #2A2A2A;
+        border-radius: 6px;
+        padding: 0.5rem 1rem;
+    }
+    .stTabs [aria-selected="true"] {
+        background-color: #D97757;
+        border-color: #D97757;
+    }
+    
+    /* Dataframes */
+    .stDataFrame {
+        border: 1px solid #2A2A2A;
+        border-radius: 8px;
+        overflow: hidden;
+    }
+    
+    /* Expander */
+    .streamlit-expanderHeader {
+        background-color: #1A1A1A;
+        border: 1px solid #2A2A2A;
+        border-radius: 6px;
+    }
+</style>
+""", unsafe_allow_html=True)
 
-A portfolio-grade quantitative research platform powered by LLM-driven strategy generation,
-backtesting, optimization, and genetic evolution.
+st.markdown("""
+# Atlas
+
+**AI-Powered Quantitative Research & Trading Signal Platform**
+
+A clean, data-driven research terminal for generating, validating, and deploying systematic trading strategies with LLM-assisted signal generation.
 
 ---
 
-## :sparkles: What It Does
+## Capabilities
 
-This AI combines a **GPT-OSS-120B LLM** (via Groq) with real-time market data from:
-- :chart_with_upwards_trend: **Yahoo Finance** — price history, dividends, splits
-- :newspaper: **Finnhub** — real-time quotes, company news
-- :bank: **Alpha Vantage** — company overviews, fundamentals
-- :mag_right: **SEC EDGAR** — 10-K / 10-Q filings
-- :globe_with_meridians: **NewsAPI** — market-wide headlines
-
-The AI generates **specific stock picks with conviction ratings** (STRONG BUY / BUY / HOLD / SELL / STRONG SELL),
-designs and validates trading strategies, and evolves robust portfolios through genetic algorithms.
-- :chart_with_upwards_trend: **Yahoo Finance** — price history, dividends, splits
-- :newspaper: **Finnhub** — real-time quotes, company news
-- :bank: **Alpha Vantage** — company overviews, fundamentals
-- :mag_right: **SEC EDGAR** — 10-K / 10-Q filings
-- :globe_with_meridians: **NewsAPI** — market-wide headlines
+| Feature | Description |
+|---|---|
+| **Strategy Generator** | Generate custom strategies with LLM reasoning, optimized for specific market conditions |
+| **Backtester** | Rigorous validation: in-sample, walk-forward out-of-sample, and Monte Carlo simulation |
+| **Optimizer** | Grid search parameter optimization across your universe |
+| **Genetic Evolution** | Evolutionary algorithm to discover robust, high-Sharpe strategies |
+| **Charts** | Interactive technical analysis with indicators and strategy overlays |
+| **Strategy Database** | Query and compare historically validated strategies |
+| **AI Chat** | Direct access to quantitative signals with conviction ratings (STRONG BUY/BUY/HOLD/SELL/STRONG SELL) |
 
 ---
 
-## :gear: Core Capabilities
+## Quick Start
 
-| Capability | Description | Status |
-|---|---|---|
-| **Strategy Generator** | LLM designs custom trading strategies across single stocks, baskets, or sector rotation | :white_check_mark: |
-| **Backtester** | Full validation pipeline: in-sample backtest + walk-forward OOS + Monte Carlo (1000 sims) | :white_check_mark: |
-| **Grid Optimizer** | Systematic parameter search over SMA / EMA / RSI configurations | :white_check_mark: |
-| **Genetic Evolution** | Evolutionary algorithm (30 generations, population 20) to discover robust strategies | :white_check_mark: |
-| **Strategy Database** | SQLite-backed storage and querying of tested strategies by Sharpe ratio | :white_check_mark: |
-| **Price Charts** | Interactive charts with SMA, Bollinger Bands, RSI, MACD indicators | :white_check_mark: |
-| **Market Memory** | Daily market summary (SPY, QQQ, Oil, Gold, BTC) + top news | :white_check_mark: |
-| **LLM Chat** | Direct Q&A — ask for stock picks, trading signals, or market analysis with conviction ratings | :white_check_mark: |
+1. Navigate to **Strategy Generator** or **AI Chat** from the sidebar
+2. Use **AI Chat** with Signal Mode enabled for specific ticker recommendations
+3. Run strategies through **Backtester** for full validation
+4. Refine with **Optimizer** or **Genetic Evolution**
+5. Save validated strategies to the **Database**
 
 ---
 
-## :clipboard: How It Works
-
-1. **Strategy Generator** — The LLM designs a strategy (entry/exit rules, universe, risk management) based on your prompt and market data context.
-2. **Backtest** — The strategy is validated across multiple dimensions: in-sample performance, walk-forward out-of-sample testing, and Monte Carlo risk simulation.
-3. **Verdict** — Each strategy receives a verdict: `CONFIRMED`, `CONDITIONAL`, or `REJECTED` based on Sharpe ratio, drawdown, and walk-forward consistency.
-4. **Optimize / Evolve** — Refine parameters via grid search or genetic algorithm to maximize robustness.
-5. **Chat for Picks** — Ask the LLM chat for specific stock picks — it uses live market data and returns conviction-rated recommendations (STRONG BUY/BUY/HOLD/SELL/STRONG SELL).
-6. **Save & Query** — Persisted strategies can be compared and queried from the database.
-
----
-
-## :warning: Risk Disclosure
-
-> This platform is for **research and educational purposes only**. It is not financial advice.
-> Past performance is not indicative of future results. Cryptocurrency and stock trading
-> carry substantial risk of loss. Always perform your own due diligence and consider
-> consulting a qualified financial advisor before making any investment decisions.
-
----
-
-### :arrow_left_click: Use the sidebar to navigate between tools.
+*Research & educational purposes only. Not financial advice. Past performance is not indicative of future results.*
 """)

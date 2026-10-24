@@ -5,7 +5,7 @@ from strategy_generator import generate_strategy
 from backtester import run_full_backtest, get_default_universe
 from performance_report import format_report
 
-st.set_page_config(page_title="Backtester", page_icon="📊", layout="wide")
+st.set_page_config(page_title="Backtester — Atlas", page_icon="⚡", layout="wide")
 
 st.title("📊 Full Backtest & Validation Pipeline")
 st.caption("In-sample backtest + walk-forward out-of-sample + Monte Carlo (1000 sims) + verdict.")

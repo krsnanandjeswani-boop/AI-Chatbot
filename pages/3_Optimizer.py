@@ -4,7 +4,7 @@ import pandas as pd
 from backtester import get_default_universe
 from optimizer import grid_optimize
 
-st.set_page_config(page_title="Grid Optimizer", page_icon="🔍", layout="wide")
+st.set_page_config(page_title="Optimizer — Atlas", page_icon="⚡", layout="wide")
 
 st.title("🔍 Grid Search Optimizer")
 st.caption("Systematically search SMA / EMA / RSI parameter space for the best-performing strategy.")

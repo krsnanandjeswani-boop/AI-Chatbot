@@ -4,7 +4,7 @@ import json
 from strategy_generator import generate_strategy, critique_strategy
 from backtester import backtest_strategy
 
-st.set_page_config(page_title="Strategy Generator", page_icon="🤖", layout="wide")
+st.set_page_config(page_title="Strategy Generator — Atlas", page_icon="⚡", layout="wide")
 
 st.title("🤖 Strategy Generator")
 st.caption("LLM designs custom trading strategies for single stocks, baskets, or sector rotation.")

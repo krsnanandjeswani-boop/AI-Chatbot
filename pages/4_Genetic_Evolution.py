@@ -5,7 +5,7 @@ import pandas as pd
 from backtester import get_default_universe
 from genetic_optimizer import evolve_strategies
 
-st.set_page_config(page_title="Genetic Evolution", page_icon="🧬", layout="wide")
+st.set_page_config(page_title="Genetic Evolution — Atlas", page_icon="⚡", layout="wide")
 
 st.title("🧬 Genetic Algorithm Strategy Evolution")
 st.caption("Evolve a population of SMA/RSI strategies across multiple generations to discover robust, high-Sharpe configurations.")

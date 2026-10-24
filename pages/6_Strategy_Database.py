@@ -4,7 +4,7 @@ import json
 
 from strategy_database import query_strategies
 
-st.set_page_config(page_title="Strategy Database", page_icon="💾", layout="wide")
+st.set_page_config(page_title="Strategy Database — Atlas", page_icon="⚡", layout="wide")
 
 st.title("💾 Strategy Database")
 st.caption("Query and browse previously saved trading strategies by performance metrics.")

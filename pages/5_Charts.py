@@ -5,7 +5,7 @@ from plotly.subplots import make_subplots
 
 from backtester import fetch_price_data, calculate_indicators, evaluate_strategy
 
-st.set_page_config(page_title="Charts", page_icon="📈", layout="wide")
+st.set_page_config(page_title="Charts — Atlas", page_icon="⚡", layout="wide")
 
 st.title("📈 Charts & Visualizations")
 st.caption("Price charts with technical indicators, and strategy performance overlays.")
