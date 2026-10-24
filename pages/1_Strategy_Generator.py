@@ -124,5 +124,21 @@ if "last_strategy" in st.session_state:
                     st.markdown(critique)
                 except Exception as e:
                     st.error(f"Error: {str(e)}")
+    
+    st.markdown("---")
+    col_c, col_d = st.columns(2)
+    with col_c:
+        if st.button("💾 Save to Database", width="stretch"):
+            try:
+                from strategy_database import save_strategy
+                from final import detect_market_regime
+                universe = strategy.get('universe', ['SPY'])
+                regime = detect_market_regime(universe[0])
+                save_strategy(strategy, {"sharpe": 0, "max_drawdown": 0, "cagr": 0}, regime, "Generated via Strategy Generator")
+                st.success("✅ Saved to database!")
+            except Exception as e:
+                st.error(f"Error: {str(e)}")
+    with col_d:
+        st.info("💡 Go to Strategy Database to load and backtest saved strategies")
 else:
     st.info("Generate a strategy to get started. Leave the ticker field blank to let the AI choose the optimal universe.")

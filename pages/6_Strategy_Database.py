@@ -6,63 +6,72 @@ from strategy_database import query_strategies
 
 st.set_page_config(page_title="Strategy Database — Atlas", page_icon="⚡", layout="wide")
 
-st.title("💾 Strategy Database")
-st.caption("Query and browse previously saved trading strategies by performance metrics.")
+st.markdown("""
+<style>
+#MainMenu {visibility: hidden;}
+footer {visibility: hidden;}
+header {visibility: hidden;}
+.block-container {padding-top: 2rem; max-width: 1100px;}
+h1 {font-weight: 700; letter-spacing: -0.02em; background: linear-gradient(135deg, #FFFFFF 0%, #B0B0B0 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;}
+.stButton > button {background: linear-gradient(135deg, #D97757 0%, #B85D42 100%); color: white; border: none; border-radius: 8px;}
+.stMetric {background: linear-gradient(145deg, #1A1A1A 0%, #151515 100%); border: 1px solid #2A2A2A; border-radius: 10px; padding: 1rem;}
+</style>
+""", unsafe_allow_html=True)
+
+st.title("Strategy Database")
+st.caption("Load, backtest, optimize, and evolve saved strategies")
 
 with st.sidebar:
-    st.header("🔍 Query Filters")
-    sharpe_threshold = st.slider("Minimum Sharpe Ratio", 0.0, 2.0, 0.5, 0.1)
-    regime_filter = st.selectbox(
-        "Market Regime",
-        ["all", "bull_high", "bear_high", "sideways_normal", "bull_normal", "bear_normal"],
-        index=0,
-        format_func=lambda x: "All Regimes" if x == "all" else x,
-    )
+    st.header("Filters")
+    sharpe_threshold = st.slider("Min Sharpe", 0.0, 2.0, 0.0, 0.1)
+    regime_filter = st.selectbox("Regime", ["all"], index=0)
 
 strategies = query_strategies(sharpe_gt=sharpe_threshold, regime=regime_filter)
 
 if not strategies:
-    st.info(f"No strategies found with Sharpe >= {sharpe_threshold} and regime = '{regime_filter}'.")
-    st.markdown("Run the **Backtester** or **Genetic Evolution** page and click 'Save to Database' to add strategies.")
+    st.info("No strategies saved yet. Generate one in Strategy Generator and click 'Save to Database'.")
 else:
-    st.success(f"Found **{len(strategies)}** strategies.")
-
+    st.success(f"{len(strategies)} strategies found")
+    
     df = pd.DataFrame([
         {
-            "name": s["name"],
-            "symbol": s["symbol"],
-            "sharpe": round(s["metrics"].get("in_sample_metrics", s["metrics"]).get("sharpe", 0), 2)
-            if isinstance(s["metrics"], dict) else 0,
-            "cagr": round(s["metrics"].get("in_sample_metrics", s["metrics"]).get("cagr", 0), 2)
-            if isinstance(s["metrics"], dict) else 0,
-            "max_dd": s["metrics"].get("in_sample_metrics", s["metrics"]).get("max_drawdown", 0)
-            if isinstance(s["metrics"], dict) else 0,
-            "regime": s.get("regime", "N/A"),
+            "Name": s["name"],
+            "Universe": s["symbol"],
+            "Sharpe": round(s["metrics"].get("in_sample_metrics", s["metrics"]).get("sharpe", 0) if isinstance(s["metrics"], dict) else 0, 2),
+            "CAGR": f"{s['metrics'].get('in_sample_metrics', s['metrics']).get('cagr', 0):.2%}" if isinstance(s["metrics"], dict) else "N/A",
+            "Regime": s.get("regime", "N/A"),
+            "Notes": s.get("notes", "")[:40]
         }
         for s in strategies
     ])
-
+    
     st.dataframe(df, width="stretch", hide_index=True)
-
+    
     st.markdown("---")
-    selected_name = st.selectbox("Select a strategy to inspect", options=df["name"].tolist(), index=0)
-    selected_strategy = next(s for s in strategies if s["name"] == selected_name)
-
-    strat_json = selected_strategy.get("parameters", {})
-    metrics = selected_strategy.get("metrics", {})
-
-    tab1, tab2, tab3 = st.tabs(["📋 Strategy", "📊 Metrics", "🏷️ Metadata"])
-
+    selected_idx = st.selectbox("Select Strategy", range(len(strategies)), format_func=lambda i: strategies[i]["name"])
+    selected = strategies[selected_idx]
+    strat_json = selected.get("parameters", {})
+    
+    col1, col2, col3, col4 = st.columns(4)
+    with col1:
+        if st.button("Load for Backtest", width="stretch"):
+            st.session_state["loaded_strategy"] = strat_json
+            st.success("Loaded! Go to Backtester page to run full validation.")
+    with col2:
+        if st.button("Load for Optimizer", width="stretch"):
+            st.session_state["loaded_strategy_opt"] = strat_json
+            st.success("Loaded! Go to Optimizer page to run grid search.")
+    with col3:
+        if st.button("Load for Evolution", width="stretch"):
+            st.session_state["loaded_strategy_evo"] = strat_json
+            st.success("Loaded! Go to Genetic Evolution page.")
+    with col4:
+        if st.button("Load for Quick Test", width="stretch"):
+            st.session_state["last_strategy"] = strat_json
+            st.success("Loaded! Go to Strategy Generator page.")
+    
+    tab1, tab2 = st.tabs(["Strategy Details", "Metrics"])
     with tab1:
         st.json(strat_json)
-
     with tab2:
-        if isinstance(metrics, dict):
-            if "in_sample_metrics" in metrics:
-                st.json(metrics["in_sample_metrics"])
-            else:
-                st.json(metrics)
-
-    with tab3:
-        st.markdown(f"**Regime:** {selected_strategy.get('regime', 'N/A')}")
-        st.markdown(f"**Notes:** {selected_strategy.get('notes', 'N/A')}")
+        st.json(selected.get("metrics", {}))
