@@ -579,6 +579,50 @@ def start_event_engine(interval_minutes=5):
     thread.start()
     return thread
 
+def detect_market_regime(symbol, period="1y"):
+    try:
+        import numpy as _np
+        import pandas as _pd
+        ticker = yf.Ticker(symbol)
+        df = ticker.history(period=period)
+        if df.empty:
+            return "unknown"
+        
+        df["returns"] = df["Close"].pct_change()
+        df["volatility"] = df["returns"].rolling(20).std() * _np.sqrt(252)
+        
+        sma_50 = df["Close"].rolling(50).mean()
+        sma_200 = df["Close"].rolling(200).mean()
+        
+        recent_vol = df["volatility"].iloc[-20:].mean()
+        high_vol = df["volatility"].quantile(0.7)
+        low_vol = df["volatility"].quantile(0.3)
+        
+        current_price = df["Close"].iloc[-1]
+        
+        if _pd.isna(sma_50.iloc[-1]):
+            return "unknown"
+        
+        if current_price > sma_50.iloc[-1] and current_price > sma_200.iloc[-1]:
+            trend = "bull"
+        elif current_price < sma_50.iloc[-1] and current_price < sma_200.iloc[-1]:
+            trend = "bear"
+        else:
+            trend = "sideways"
+        
+        if recent_vol > high_vol:
+            vol = "high"
+        elif recent_vol < low_vol:
+            vol = "low"
+        else:
+            vol = "normal"
+        
+        return f"{trend}_{vol}"
+    except Exception:
+        return "unknown"
+
+
 if __name__ == "__main__":
     print(generate_daily_market_memory())
+
 
