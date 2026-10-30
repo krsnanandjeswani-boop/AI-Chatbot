@@ -8,8 +8,10 @@ font = "sans serif"
 [server]
 headless = true
 enableCORS = false
-enableXsrfProtection = false
+enableXsrfProtection = true
+runOnSave = true
 
 [ui]
-hideTopBar = true
+hideTopBar = false
+
 
