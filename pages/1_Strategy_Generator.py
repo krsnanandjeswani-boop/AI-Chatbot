@@ -17,10 +17,11 @@ st.markdown("""
 </style>
 """, unsafe_allow_html=True)
 
-# ─── Input Section ───────────────────────────────────────────────────────
-section_header("Create New Strategy", "Define your universe and objectives")
+st.title("Strategy Generator")
+st.caption("LLM-powered strategy design with multi-asset flexibility")
 
-with card_container():
+st.markdown("### Create New Strategy")
+st.caption("Define your universe and objectives")
     col1, col2 = st.columns([2, 1])
     with col1:
         symbol = st.text_input(

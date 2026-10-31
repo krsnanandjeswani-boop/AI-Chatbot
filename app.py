@@ -24,13 +24,8 @@ st.markdown("""
 </div>
 """, unsafe_allow_html=True)
 
-# ─── Features Grid ───────────────────────────────────────────────────────
-section_header(
-    "Core Capabilities",
-    "Four integrated modules for end-to-end quantitative research"
-)
-
-features = [
+st.markdown("## Core Capabilities")
+st.markdown("Use the sidebar to navigate between Strategy Generator, Backtester, Optimizer, Genetic Evolution, Charts, Strategy Database, and AI Chat.")
     {
         "icon": "🎯",
         "title": "Signal Generation",

@@ -7,12 +7,19 @@ from backtester import fetch_price_data, calculate_indicators, evaluate_strategy
 
 apply_sidebar_css()
 
-st.set_page_config(page_title="Genetic Evolution — Atlas", page_icon="⚡", layout="wide")
+st.set_page_config(page_title="Charts — Atlas", page_icon="⚡", layout="wide")
 
-page_config("Charts", icon="⚡")
-apply_design_system()
+st.markdown("""
+<style>
+    #MainMenu {visibility: hidden;}
+    footer {visibility: hidden;}
+    header {visibility: hidden;}
+    .block-container {padding-top: 2rem; max-width: 1100px;}
+</style>
+""", unsafe_allow_html=True)
 
-hero("Charts & Visualizations", "Price charts with technical indicators, and strategy performance overlays.", icon="📈")
+st.title("Charts & Visualizations")
+st.caption("Price charts with technical indicators, and strategy performance overlays")
 
 
 def plotly_price_chart(symbol, period="1y", show_indicators=True):

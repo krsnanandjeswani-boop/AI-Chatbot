@@ -8,10 +8,17 @@ apply_sidebar_css()
 
 st.set_page_config(page_title="Optimizer — Atlas", page_icon="⚡", layout="wide")
 
-page_config("Optimizer", icon="⚡")
-apply_design_system()
+st.markdown("""
+<style>
+    #MainMenu {visibility: hidden;}
+    footer {visibility: hidden;}
+    header {visibility: hidden;}
+    .block-container {padding-top: 2rem; max-width: 1100px;}
+</style>
+""", unsafe_allow_html=True)
 
-hero("Grid Search Optimizer", "Systematically search SMA / EMA / RSI parameter space for the best-performing strategy.", icon="🔍")
+st.title("Grid Search Optimizer")
+st.caption("Systematically search SMA / EMA / RSI parameter space for the best-performing strategy")
 
 with st.form(key="opt_form"):
     section_header("Universe & Parameters", "Configure the search universe and parameter ranges")
