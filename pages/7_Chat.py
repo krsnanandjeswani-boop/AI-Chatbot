@@ -1,8 +1,9 @@
 import streamlit as st
 import os
 from groq import Groq, NotFoundError, AuthenticationError, RateLimitError
+from sidebar_style import apply_sidebar_css
 
-GROQ_API_KEY = os.getenv("GROQ_API_KEY", "")
+apply_sidebar_css()
 
 AVAILABLE_MODELS = [
     "openai/gpt-oss-120b",

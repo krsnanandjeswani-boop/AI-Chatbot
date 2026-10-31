@@ -6,6 +6,9 @@ from ui_styles import (
 )
 from strategy_generator import generate_strategy, critique_strategy
 from backtester import backtest_strategy
+from sidebar_style import apply_sidebar_css
+
+apply_sidebar_css()
 
 # ─── Page Config & Design System ────────────────────────────────────────
 page_config("Strategy Generator", "🎯")

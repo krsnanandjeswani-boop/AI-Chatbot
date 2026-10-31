@@ -1,9 +1,14 @@
 import streamlit as st
-from ui_styles import page_config, hero, section_header, divider, feature_grid, apply_design_system
+from sidebar_style import apply_sidebar_css
 
-# ─── Page Config & Design System ────────────────────────────────────────
-page_config("Atlas", "⚡", "wide", "expanded")
-apply_design_system()
+st.set_page_config(
+    page_title="Atlas — AI Trading Research",
+    page_icon="⚡",
+    layout="wide",
+    initial_sidebar_state="expanded",
+)
+
+apply_sidebar_css()
 
 # ─── Hero Section ────────────────────────────────────────────────────────
 hero(
