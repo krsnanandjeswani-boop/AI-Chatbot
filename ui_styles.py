@@ -875,12 +875,12 @@ def metric_card(label: str, value: str, delta: str = "", delta_color: str = "nor
     if delta:
         color_map = {"normal": "var(--color-text-secondary)", "success": "var(--color-success)",
                      "error": "var(--color-error)", "warning": "var(--color-warning)"}
-        delta_html = f'<div style="font-size: {TYPOGRAPHY["size_sm"]}; font-weight: {TYPOGRAPHY["weight_medium"]}; color: {color_map.get(delta_color, "var(--color-text-secondary)")}; margin-top: {SPACE[1]};">{delta}</div>'
+        delta_html = f'<div style="font-size: {TYPOGRAPHY["size_sm"]}; font-weight: {TYPOGRAPHY["weight_medium"]}; color: {color_map.get(delta_color, "var(--color-text-secondary)")}; margin-top: {SPACE["1"]};">{delta}</div>'
 
     return f"""
     <div class="card" style="padding: {SPACE['4']};">
         <div style="font-size: {TYPOGRAPHY['size_sm']}; font-weight: {TYPOGRAPHY['weight_medium']};
-                    color: var(--color-text-secondary); margin-bottom: {SPACE[1]};">{label}</div>
+                    color: var(--color-text-secondary); margin-bottom: {SPACE["1"]};">{label}</div>
         <div style="font-size: {TYPOGRAPHY['size_2xl']}; font-weight: {TYPOGRAPHY['weight_bold']};
                     color: var(--color-text-primary); font-family: var(--font-mono);">{value}</div>
         {delta_html}
@@ -890,7 +890,7 @@ def metric_card(label: str, value: str, delta: str = "", delta_color: str = "nor
 
 def info_card(title: str, content: str, icon: str = ""):
     """Render an info card."""
-    icon_html = f'<div style="width: 40px; height: 40px; border-radius: var(--radius-lg); background: var(--color-accent-light); display: flex; align-items: center; justify-content: center; font-size: 1.25rem; margin-bottom: {SPACE[3]};">{icon}</div>' if icon else ""
+    icon_html = f'<div style="width: 40px; height: 40px; border-radius: var(--radius-lg); background: var(--color-accent-light); display: flex; align-items: center; justify-content: center; font-size: 1.25rem; margin-bottom: {SPACE["3"]};">{icon}</div>' if icon else ""
     return f"""
     <div class="card">
         {icon_html}
