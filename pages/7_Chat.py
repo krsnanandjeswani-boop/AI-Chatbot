@@ -5,6 +5,8 @@ from sidebar_style import apply_sidebar_css
 
 apply_sidebar_css()
 
+GROQ_API_KEY = os.getenv("GROQ_API_KEY", "")
+
 AVAILABLE_MODELS = [
     "openai/gpt-oss-120b",
     "openai/gpt-oss-20b",
