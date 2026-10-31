@@ -26,33 +26,6 @@ st.markdown("""
 
 st.markdown("## Core Capabilities")
 st.markdown("Use the sidebar to navigate between Strategy Generator, Backtester, Optimizer, Genetic Evolution, Charts, Strategy Database, and AI Chat.")
-    {
-        "icon": "🎯",
-        "title": "Signal Generation",
-        "description": "Get specific ticker picks with conviction ratings, price targets, and risk management levels."
-    },
-    {
-        "icon": "⚡",
-        "title": "Strategy Validation",
-        "description": "Rigorous backtesting with walk-forward analysis, Monte Carlo simulation, and data-driven verdicts."
-    },
-    {
-        "icon": "🧬",
-        "title": "AI Optimization",
-        "description": "Grid search and genetic evolution to discover robust, high-Sharpe parameter combinations."
-    },
-    {
-        "icon": "📊",
-        "title": "Interactive Charts",
-        "description": "Technical analysis with SMA, Bollinger Bands, RSI, and strategy performance overlays."
-    },
-    {
-        "icon": "💾",
-        "title": "Strategy Database",
-        "description": "Save, query, and compare validated strategies across market regimes."
-    },
-    {
-        "icon": "💬",
         "title": "AI Chat",
         "description": "Real-time quantitative signals with reasoning — powered by GPT-OSS models."
     },
