@@ -843,8 +843,8 @@ def hero(title: str, subtitle: str = "", icon: str = ""):
     """Render a professional hero section."""
     icon_html = f'<span style="font-size: 1.2em; margin-right: {SPACE["3"]};">{icon}</span>' if icon else ""
     st.markdown(f"""
-    <div class="animate-fade-in" style="text-align: center; padding: {SPACE['8']} 0 {SPACE['6']} 0;">
-        <h1 style="font-size: {TYPOGRAPHY['size_5xl']}; margin-bottom: {SPACE['3']};
+    <div class="animate-fade-in" style="text-align: center; padding: {SPACE["8"]} 0 {SPACE["6"]} 0;">
+        <h1 style="font-size: {TYPOGRAPHY['size_5xl']}; margin-bottom: {SPACE["3"]};
                    background: linear-gradient(135deg, var(--color-text-primary) 0%, var(--color-text-secondary) 100%);
                    -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">
             {icon_html}{title}
@@ -859,9 +859,9 @@ def section_header(title: str, description: str = "", action=None):
     action_html = f'<div>{action}</div>' if action else ""
     st.markdown(f"""
     <div style="display: flex; align-items: flex-start; justify-content: space-between;
-                gap: {SPACE['4']}; margin-bottom: {SPACE['6']}; flex-wrap: wrap;">
+                gap: {SPACE["4"]}; margin-bottom: {SPACE["6"]}; flex-wrap: wrap;">
         <div>
-            <h2 style="margin: 0 0 {SPACE['1']} 0;">{title}</h2>
+            <h2 style="margin: 0 0 {SPACE["1"]} 0;">{title}</h2>
             {f'<p style="margin: 0; color: var(--color-text-secondary);">{description}</p>' if description else ''}
         </div>
         {action_html}
