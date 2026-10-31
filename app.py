@@ -10,6 +10,8 @@ st.set_page_config(
 
 apply_sidebar_css()
 
+apply_sidebar_css()
+
 # ─── Hero Section ────────────────────────────────────────────────────────
 hero(
     "Atlas",
