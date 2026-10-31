@@ -841,7 +841,7 @@ def page_config(title: str, icon: str = "⚡", layout: str = "wide", sidebar: st
 
 def hero(title: str, subtitle: str = "", icon: str = ""):
     """Render a professional hero section."""
-    icon_html = f'<span style="font-size: 1.2em; margin-right: {SPACE[3]};">{icon}</span>' if icon else ""
+    icon_html = f'<span style="font-size: 1.2em; margin-right: {SPACE["3"]};">{icon}</span>' if icon else ""
     st.markdown(f"""
     <div class="animate-fade-in" style="text-align: center; padding: {SPACE['8']} 0 {SPACE['6']} 0;">
         <h1 style="font-size: {TYPOGRAPHY['size_5xl']}; margin-bottom: {SPACE['3']};
