@@ -6,12 +6,16 @@ from backtester import backtest_strategy
 
 apply_sidebar_css()
 
-# ─── Page Config & Design System ────────────────────────────────────────
-page_config("Strategy Generator", "🎯")
-apply_design_system()
+st.set_page_config(page_title="Strategy Generator — Atlas", page_icon="⚡", layout="wide")
 
-# ─── Hero ────────────────────────────────────────────────────────────────
-hero("Strategy Generator", "LLM-powered strategy design with multi-asset flexibility", "🎯")
+st.markdown("""
+<style>
+    #MainMenu {visibility: hidden;}
+    footer {visibility: hidden;}
+    header {visibility: hidden;}
+    .block-container {padding-top: 2rem; max-width: 1100px;}
+</style>
+""", unsafe_allow_html=True)
 
 # ─── Input Section ───────────────────────────────────────────────────────
 section_header("Create New Strategy", "Define your universe and objectives")

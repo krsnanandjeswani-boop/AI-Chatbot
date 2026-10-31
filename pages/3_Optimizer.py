@@ -6,6 +6,8 @@ from optimizer import grid_optimize
 
 apply_sidebar_css()
 
+st.set_page_config(page_title="Optimizer — Atlas", page_icon="⚡", layout="wide")
+
 page_config("Optimizer", icon="⚡")
 apply_design_system()
 

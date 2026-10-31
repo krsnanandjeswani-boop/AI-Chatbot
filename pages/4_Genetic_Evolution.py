@@ -7,6 +7,8 @@ from backtester import fetch_price_data, calculate_indicators, evaluate_strategy
 
 apply_sidebar_css()
 
+st.set_page_config(page_title="Genetic Evolution — Atlas", page_icon="⚡", layout="wide")
+
 page_config("Charts", icon="⚡")
 apply_design_system()
 
