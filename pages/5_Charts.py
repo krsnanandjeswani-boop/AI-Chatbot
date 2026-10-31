@@ -1,3 +1,6 @@
+from sidebar_style import apply_sidebar_css
+apply_sidebar_css()
+
 import streamlit as st
 from io import BytesIO
 import plotly.graph_objects as go

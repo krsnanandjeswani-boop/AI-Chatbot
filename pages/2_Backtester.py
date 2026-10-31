@@ -1,3 +1,6 @@
+from sidebar_style import apply_sidebar_css
+apply_sidebar_css()
+
 import streamlit as st
 
 from backtester import run_full_backtest, get_default_universe
