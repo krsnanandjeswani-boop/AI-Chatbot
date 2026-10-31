@@ -10,17 +10,16 @@ st.set_page_config(
 
 apply_sidebar_css()
 
-apply_sidebar_css()
-
 # ─── Hero Section ────────────────────────────────────────────────────────
-hero(
-    "Atlas",
-    "AI-Powered Quantitative Research & Trading Intelligence",
-    "⚡"
-)
+st.markdown("""
+<div style="text-align: center; padding: 2rem 0 1.5rem 0;">
+    <h1 style="font-size: 2.5rem; font-weight: 600; margin-bottom: 0.5rem; background: linear-gradient(135deg, #ffffff 0%, #a1a1aa 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">Atlas</h1>
+    <p style="font-size: 1.125rem; color: #d4d4d8;">AI-Powered Quantitative Research & Trading Intelligence</p>
+</div>
+""", unsafe_allow_html=True)
 
 st.markdown("""
-<div style="text-align: center; max-width: 720px; margin: 0 auto 4rem auto; color: var(--color-text-secondary); font-size: 1.125rem; line-height: 1.6;">
+<div style="text-align: center; max-width: 720px; margin: 0 auto 4rem auto; color: #a1a1aa; font-size: 1rem; line-height: 1.6;">
     A precision-built research terminal combining LLMs with real-time market data to generate, validate, and optimize systematic trading strategies with conviction-based signal generation.
 </div>
 """, unsafe_allow_html=True)
