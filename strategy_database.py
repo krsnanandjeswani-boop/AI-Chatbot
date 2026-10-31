@@ -79,7 +79,27 @@ def query_strategies(sharpe_gt=0, dd_gt=-100, regime="all"):
     conn.close()
     
     return [
-        {"name": r[1], "symbol": r[2], "parameters": json.loads(r[3]), 
+        {"id": r[0], "name": r[1], "symbol": r[2], "parameters": json.loads(r[3]), 
          "metrics": json.loads(r[4]), "regime": r[5], "notes": r[6]}
         for r in rows if float(r[8] or 0) >= dd_gt
     ]
+
+
+def rename_strategy(strategy_id, new_name):
+    init_db()
+    conn = sqlite3.connect(DB_PATH)
+    c = conn.cursor()
+    c.execute("UPDATE strategies SET name = ? WHERE id = ?", (new_name.strip(), strategy_id))
+    conn.commit()
+    conn.close()
+    return True
+
+
+def delete_strategy(strategy_id):
+    init_db()
+    conn = sqlite3.connect(DB_PATH)
+    c = conn.cursor()
+    c.execute("DELETE FROM strategies WHERE id = ?", (strategy_id,))
+    conn.commit()
+    conn.close()
+    return True

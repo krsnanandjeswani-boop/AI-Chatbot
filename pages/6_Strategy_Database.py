@@ -2,7 +2,7 @@ import streamlit as st
 import pandas as pd
 import json
 
-from strategy_database import query_strategies
+from strategy_database import query_strategies, rename_strategy, delete_strategy
 
 st.set_page_config(page_title="Strategy Database — Atlas", page_icon="⚡", layout="wide")
 
@@ -25,6 +25,8 @@ with st.sidebar:
     st.header("Filters")
     sharpe_threshold = st.slider("Min Sharpe", 0.0, 2.0, 0.0, 0.1)
     regime_filter = st.selectbox("Regime", ["all"], index=0)
+    if st.button("Refresh"):
+        st.rerun()
 
 strategies = query_strategies(sharpe_gt=sharpe_threshold, regime=regime_filter)
 
@@ -35,12 +37,12 @@ else:
     
     df = pd.DataFrame([
         {
+            "ID": s.get("id"),
             "Name": s["name"],
             "Universe": s["symbol"],
             "Sharpe": round(s["metrics"].get("in_sample_metrics", s["metrics"]).get("sharpe", 0) if isinstance(s["metrics"], dict) else 0, 2),
             "CAGR": f"{s['metrics'].get('in_sample_metrics', s['metrics']).get('cagr', 0):.2%}" if isinstance(s["metrics"], dict) else "N/A",
             "Regime": s.get("regime", "N/A"),
-            "Notes": s.get("notes", "")[:40]
         }
         for s in strategies
     ])
@@ -48,30 +50,52 @@ else:
     st.dataframe(df, width="stretch", hide_index=True)
     
     st.markdown("---")
-    selected_idx = st.selectbox("Select Strategy", range(len(strategies)), format_func=lambda i: strategies[i]["name"])
+    selected_idx = st.selectbox("Select Strategy", range(len(strategies)), format_func=lambda i: f"{strategies[i].get('name','Unnamed')} ({strategies[i].get('symbol','')})")
     selected = strategies[selected_idx]
+    strat_id = selected.get("id")
     strat_json = selected.get("parameters", {})
     
+    st.markdown("### Load Into Tools")
     col1, col2, col3, col4 = st.columns(4)
     with col1:
         if st.button("Load for Backtest", width="stretch"):
             st.session_state["loaded_strategy"] = strat_json
-            st.success("Loaded! Go to Backtester page to run full validation.")
+            st.success("Loaded. Go to Backtester to run full validation.")
     with col2:
         if st.button("Load for Optimizer", width="stretch"):
             st.session_state["loaded_strategy_opt"] = strat_json
-            st.success("Loaded! Go to Optimizer page to run grid search.")
+            st.success("Loaded. Go to Optimizer to run grid search.")
     with col3:
         if st.button("Load for Evolution", width="stretch"):
             st.session_state["loaded_strategy_evo"] = strat_json
-            st.success("Loaded! Go to Genetic Evolution page.")
+            st.success("Loaded. Go to Genetic Evolution to run evolution.")
     with col4:
         if st.button("Load for Quick Test", width="stretch"):
             st.session_state["last_strategy"] = strat_json
-            st.success("Loaded! Go to Strategy Generator page.")
+            st.success("Loaded. Go to Strategy Generator.")
+    
+    st.markdown("### Manage Strategy")
+    m1, m2, m3 = st.columns([3, 1, 1])
+    with m1:
+        new_name = st.text_input("Rename strategy", value=selected.get("name", "Unnamed"), key="rename_input")
+    with m2:
+        if st.button("Rename", width="stretch"):
+            if strat_id is not None and new_name.strip():
+                rename_strategy(strat_id, new_name.strip())
+                st.success("Renamed")
+                st.rerun()
+    with m3:
+        if st.button("Delete", width="stretch", type="secondary"):
+            if strat_id is not None:
+                delete_strategy(strat_id)
+                st.warning("Deleted")
+                st.rerun()
     
     tab1, tab2 = st.tabs(["Strategy Details", "Metrics"])
     with tab1:
         st.json(strat_json)
     with tab2:
         st.json(selected.get("metrics", {}))
+        if selected.get("notes"):
+            st.caption(selected["notes"])
+
