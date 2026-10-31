@@ -1,31 +1,57 @@
-import streamlit as st
-from sidebar_style import apply_sidebar_css
+﻿import streamlit as st
+from ui_styles import page_config, hero, section_header, divider, feature_grid, apply_design_system
 
-st.set_page_config(
-    page_title="Atlas — AI Trading Research",
-    page_icon="⚡",
-    layout="wide",
-    initial_sidebar_state="expanded",
-)
-
-apply_sidebar_css()
+# ─── Page Config & Design System ────────────────────────────────────────
+page_config("Atlas", "⚡", "wide", "expanded")
+apply_design_system()
 
 # ─── Hero Section ────────────────────────────────────────────────────────
-st.markdown("""
-<div style="text-align: center; padding: 2rem 0 1.5rem 0;">
-    <h1 style="font-size: 2.5rem; font-weight: 600; margin-bottom: 0.5rem; background: linear-gradient(135deg, #ffffff 0%, #a1a1aa 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">Atlas</h1>
-    <p style="font-size: 1.125rem; color: #d4d4d8;">AI-Powered Quantitative Research & Trading Intelligence</p>
-</div>
-""", unsafe_allow_html=True)
+hero(
+    "Atlas",
+    "AI-Powered Quantitative Research & Trading Intelligence",
+    "⚡"
+)
 
 st.markdown("""
-<div style="text-align: center; max-width: 720px; margin: 0 auto 4rem auto; color: #a1a1aa; font-size: 1rem; line-height: 1.6;">
+<div style="text-align: center; max-width: 720px; margin: 0 auto 4rem auto; color: var(--color-text-secondary); font-size: 1.125rem; line-height: 1.6;">
     A precision-built research terminal combining LLMs with real-time market data to generate, validate, and optimize systematic trading strategies with conviction-based signal generation.
 </div>
 """, unsafe_allow_html=True)
 
-st.markdown("## Core Capabilities")
-st.markdown("Use the sidebar to navigate between Strategy Generator, Backtester, Optimizer, Genetic Evolution, Charts, Strategy Database, and AI Chat.")
+# ─── Features Grid ───────────────────────────────────────────────────────
+section_header(
+    "Core Capabilities",
+    "Four integrated modules for end-to-end quantitative research"
+)
+
+features = [
+    {
+        "icon": "🎯",
+        "title": "Signal Generation",
+        "description": "Get specific ticker picks with conviction ratings, price targets, and risk management levels."
+    },
+    {
+        "icon": "⚡",
+        "title": "Strategy Validation",
+        "description": "Rigorous backtesting with walk-forward analysis, Monte Carlo simulation, and data-driven verdicts."
+    },
+    {
+        "icon": "🧬",
+        "title": "AI Optimization",
+        "description": "Grid search and genetic evolution to discover robust, high-Sharpe parameter combinations."
+    },
+    {
+        "icon": "📊",
+        "title": "Interactive Charts",
+        "description": "Technical analysis with SMA, Bollinger Bands, RSI, and strategy performance overlays."
+    },
+    {
+        "icon": "💾",
+        "title": "Strategy Database",
+        "description": "Save, query, and compare validated strategies across market regimes."
+    },
+    {
+        "icon": "💬",
         "title": "AI Chat",
         "description": "Real-time quantitative signals with reasoning — powered by GPT-OSS models."
     },
