@@ -1,12 +1,8 @@
 import streamlit as st
 import json
-from ui_styles import (
-    page_config, hero, section_header, divider, card_container,
-    apply_design_system, metric_card, stat_row, badge, info_card
-)
+from sidebar_style import apply_sidebar_css
 from strategy_generator import generate_strategy, critique_strategy
 from backtester import backtest_strategy
-from sidebar_style import apply_sidebar_css
 
 apply_sidebar_css()
 

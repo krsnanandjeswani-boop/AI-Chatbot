@@ -1,18 +1,10 @@
 import streamlit as st
 import pandas as pd
-
+from sidebar_style import apply_sidebar_css
 from backtester import get_default_universe
 from optimizer import grid_optimize
-from ui_styles import (
-    page_config,
-    apply_design_system,
-    hero,
-    section_header,
-    divider,
-    card_container,
-    stat_row,
-    metric_card,
-)
+
+apply_sidebar_css()
 
 page_config("Optimizer", icon="⚡")
 apply_design_system()

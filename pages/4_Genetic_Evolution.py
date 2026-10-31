@@ -2,19 +2,10 @@ import streamlit as st
 from io import BytesIO
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
-
+from sidebar_style import apply_sidebar_css
 from backtester import fetch_price_data, calculate_indicators, evaluate_strategy
-from ui_styles import (
-    page_config,
-    apply_design_system,
-    hero,
-    section_header,
-    divider,
-    card_container,
-    stat_row,
-    metric_card,
-    badge,
-)
+
+apply_sidebar_css()
 
 page_config("Charts", icon="⚡")
 apply_design_system()
