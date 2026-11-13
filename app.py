@@ -1,4 +1,5 @@
 import streamlit as st
+from sidebar_style import apply_sidebar_css
 
 st.set_page_config(
     page_title="Atlas — AI Trading Research",
@@ -6,6 +7,8 @@ st.set_page_config(
     layout="wide",
     initial_sidebar_state="expanded",
 )
+
+apply_sidebar_css()
 
 # Premium CSS with animations
 st.markdown("""

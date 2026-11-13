@@ -3,8 +3,11 @@ import pandas as pd
 
 from backtester import get_default_universe
 from optimizer import grid_optimize
+from sidebar_style import apply_sidebar_css
 
 st.set_page_config(page_title="Optimizer — Atlas", page_icon="⚡", layout="wide")
+
+apply_sidebar_css()
 
 st.title("🔍 Grid Search Optimizer")
 st.caption("Systematically search SMA / EMA / RSI parameter space for the best-performing strategy.")
