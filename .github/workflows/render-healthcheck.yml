@@ -1,0 +1,61 @@
+name: Render health check
+
+on:
+  schedule:
+    - cron: "*/10 * * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  health-check:
+    name: Check Render webpage
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    env:
+      RENDER_HEALTHCHECK_URL: ${{ vars.RENDER_HEALTHCHECK_URL }}
+    steps:
+      - name: Check Render health and homepage
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          if [[ -z "$RENDER_HEALTHCHECK_URL" ]]; then
+            echo "::error::Set the repository Actions variable RENDER_HEALTHCHECK_URL to the Render service base URL."
+            exit 1
+          fi
+          if [[ "$RENDER_HEALTHCHECK_URL" != https://* ]]; then
+            echo "::error::RENDER_HEALTHCHECK_URL must use HTTPS."
+            exit 1
+          fi
+
+          base_url="${RENDER_HEALTHCHECK_URL%/}"
+          health_body="$(curl --fail --silent --show-error --location \
+            --retry 1 --retry-delay 2 --retry-connrefused \
+            --connect-timeout 10 --max-time 20 \
+            "$base_url/_stcore/health")"
+          if [[ "$health_body" != "ok" ]]; then
+            echo "::error::Render health endpoint returned an unexpected response."
+            exit 1
+          fi
+
+          page_result="$(curl --silent --show-error --location \
+            --retry 1 --retry-delay 2 --retry-connrefused \
+            --connect-timeout 10 --max-time 20 \
+            --output "$RUNNER_TEMP/render-homepage.html" \
+            --write-out '%{http_code}|%{content_type}' \
+            "$base_url/")"
+          http_status="${page_result%%|*}"
+          content_type="${page_result#*|}"
+
+          if [[ ! "$http_status" =~ ^2[0-9][0-9]$ ]]; then
+            echo "::error::Render homepage returned HTTP $http_status."
+            exit 1
+          fi
+          if [[ "$content_type" != text/html* ]] || ! grep -qi '<html' "$RUNNER_TEMP/render-homepage.html"; then
+            echo "::error::Render homepage did not return an HTML page."
+            exit 1
+          fi
+
+          echo "Render health endpoint and homepage are responding."
