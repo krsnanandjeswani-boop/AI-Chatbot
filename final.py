@@ -49,15 +49,17 @@ def get_stock_quote(symbol):
         return None
 
 def get_company_news(symbol):
+    from_date = (datetime.now() - timedelta(days=30)).strftime("%Y-%m-%d")
+    to_date = datetime.now().strftime("%Y-%m-%d")
     url = (
         f"https://finnhub.io/api/v1/company-news"
         f"?symbol={symbol}"
-        f"&from=2024-01-01"
-        f"&to=2024-12-31"
+        f"&from={from_date}"
+        f"&to={to_date}"
         f"&token={FINNHUB_API_KEY}"
     )
     try:
-        response = requests.get(url)
+        response = requests.get(url, timeout=8)
         if response.status_code != 200:
             return []
         return response.json()[:5]

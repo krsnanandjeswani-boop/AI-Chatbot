@@ -2,9 +2,22 @@ import streamlit as st
 import os
 from groq import Groq, NotFoundError, AuthenticationError, RateLimitError
 from nav import render_sidebar
+from news_provider import format_news_context, search_google_news
 from ui_styles import QUANTBOT_ICON, apply_design_system, render_page_header
+from streamlit.errors import StreamlitSecretNotFoundError
 
-GROQ_API_KEY = os.getenv("GROQ_API_KEY", "")
+
+def get_groq_api_key():
+    environment_key = os.getenv("GROQ_API_KEY", "").strip()
+    if environment_key:
+        return environment_key
+    try:
+        return str(st.secrets.get("GROQ_API_KEY", "")).strip()
+    except StreamlitSecretNotFoundError:
+        return ""
+
+
+GROQ_API_KEY = get_groq_api_key()
 
 AVAILABLE_MODELS = [
     "openai/gpt-oss-120b",
@@ -25,6 +38,9 @@ CORE DIRECTIVES:
 - Do not use emojis.
 - If information is incomplete, state what you're missing AND still provide your best data-driven assessment.
 - Prioritize actionable insights over generic explanations.
+- Use the current headline search supplied for each user message when discussing recent events. Cite its links and dates.
+- Headlines are not proof: do not infer article details or present allegations as facts. State when a claim is unverified or sources conflict.
+- If current headlines are unavailable, say so and do not imply that you checked live news successfully.
 """
 
 st.set_page_config(page_title="AI Research — Quantbot", page_icon=QUANTBOT_ICON, layout="wide", initial_sidebar_state="expanded")
@@ -33,12 +49,19 @@ apply_design_system()
 render_sidebar()
 
 if not GROQ_API_KEY:
-    st.warning("**GROQ_API_KEY not set.** Add it to Streamlit Cloud Secrets.")
+    st.warning(
+        "**GROQ_API_KEY not set.** Add it to Render environment variables, "
+        "or to Streamlit secrets for local development."
+    )
 
 render_page_header(
     "Research assistant",
     "AI Research",
     "Explore tickers, test market hypotheses, and develop research ideas with an AI assistant.",
+)
+st.caption(
+    "Current headline search via Google News RSS for personal, non-commercial research. "
+    "Headlines are leads; verify linked reporting before acting."
 )
 
 if "chat_messages" not in st.session_state:
@@ -65,6 +88,17 @@ with st.sidebar:
 for msg in st.session_state.chat_messages:
     with st.chat_message(msg["role"]):
         st.markdown(msg["content"])
+        if msg["role"] == "assistant" and msg.get("news_sources"):
+            with st.expander("News headlines used"):
+                for article in msg["news_sources"]:
+                    st.text(article["title"])
+                    st.caption(
+                        f"{article['publisher']} · "
+                        f"{article['published_at'] or 'date not listed'}"
+                    )
+                    st.markdown(f"[Open source]({article['url']})")
+        if msg["role"] == "assistant" and msg.get("news_error"):
+            st.warning(msg["news_error"])
 
 if not st.session_state.chat_messages:
     col1, col2, col3 = st.columns(3)
@@ -84,12 +118,23 @@ if prompt:
         st.markdown(prompt)
     
     with st.spinner("Analyzing..."):
+        news_result = None
         if not GROQ_API_KEY:
-            response = "GROQ_API_KEY is not configured. Add it to Streamlit Cloud Secrets."
+            response = (
+                "GROQ_API_KEY is not configured. Add it to Render environment "
+                "variables or Streamlit secrets for local development."
+            )
         else:
             try:
+                news_result = search_google_news(prompt)
                 client = Groq(api_key=GROQ_API_KEY)
-                messages = [{"role": "system", "content": SYSTEM_PROMPT}]
+                messages = [
+                    {"role": "system", "content": SYSTEM_PROMPT},
+                    {
+                        "role": "system",
+                        "content": format_news_context(news_result),
+                    },
+                ]
                 
                 # Enhanced instruction based on toggles
                 if signal_mode:
@@ -126,5 +171,17 @@ if prompt:
             except Exception as e:
                 response = f"Error: {str(e)[:200]}"
     
-    st.session_state.chat_messages.append({"role": "assistant", "content": response})
+    assistant_message = {"role": "assistant", "content": response}
+    if news_result is not None:
+        assistant_message["news_sources"] = [
+            {
+                "title": article.title,
+                "publisher": article.publisher,
+                "published_at": article.published_at,
+                "url": article.url,
+            }
+            for article in news_result.articles
+        ]
+        assistant_message["news_error"] = news_result.error
+    st.session_state.chat_messages.append(assistant_message)
     st.rerun()
