@@ -275,7 +275,6 @@ html {{
 }}
 
 .stApp {{
-    position: relative;
     isolation: isolate;
     background-color: var(--color-bg-primary);
 }}
