@@ -1,65 +1,63 @@
-"""
-Atlas UI Design System
-Professional, Claude-inspired styling for Streamlit applications.
-"""
+"""Quantbot design tokens and shared Streamlit styling."""
 
+from html import escape
+from pathlib import Path
 import streamlit as st
+
+
+QUANTBOT_ICON = Path(__file__).with_name("quantbot-mark.svg")
 
 
 # ─── Design Tokens ────────────────────────────────────────────────────────
 
-# Color palette - professional neutrals with a refined accent
+# Dark neutrals with a restrained copper accent
 COLORS = {
-    # Neutrals (light mode)
-    "bg_primary": "#FFFFFF",
-    "bg_secondary": "#F7F7F8",
-    "bg_tertiary": "#EEEEEF",
-    "bg_card": "#FFFFFF",
-    "bg_card_hover": "#FAFAFA",
-    "border_subtle": "#E5E5E6",
-    "border_default": "#D4D4D8",
-    "border_strong": "#A3A3AA",
-    "text_primary": "#1A1A1A",
-    "text_secondary": "#52525B",
-    "text_muted": "#A1A1AA",
-    "text_inverse": "#FFFFFF",
-
-    # Accent - refined amber/orange (professional, not aggressive)
-    "accent": "#C4772C",
-    "accent_hover": "#B06828",
-    "accent_light": "#FEF3E2",
-    "accent_border": "#F5D9B8",
+    "bg_primary": "#0B0E10",
+    "bg_secondary": "#101518",
+    "bg_tertiary": "#171D20",
+    "bg_card": "#11171A",
+    "bg_card_hover": "#161D21",
+    "border_subtle": "#20292D",
+    "border_default": "#303B40",
+    "border_strong": "#465359",
+    "text_primary": "#F0F2F1",
+    "text_secondary": "#A7B0B1",
+    "text_muted": "#778284",
+    "text_inverse": "#111315",
+    "accent": "#D6A06C",
+    "accent_hover": "#E1B27E",
+    "accent_light": "rgba(214, 160, 108, 0.12)",
+    "accent_border": "rgba(214, 160, 108, 0.35)",
 
     # Semantic colors
-    "success": "#15803D",
-    "success_bg": "#F0FDF4",
-    "success_border": "#BBF7D0",
-    "warning": "#B45309",
-    "warning_bg": "#FFF7ED",
-    "warning_border": "#FDE68A",
-    "error": "#B91C1C",
-    "error_bg": "#FEF2F2",
-    "error_border": "#FECACA",
-    "info": "#1D4ED8",
-    "info_bg": "#EFF6FF",
-    "info_border": "#BFDBFE",
+    "success": "#88C5A3",
+    "success_bg": "#14231B",
+    "success_border": "#2B4938",
+    "warning": "#D6B078",
+    "warning_bg": "#292116",
+    "warning_border": "#57452A",
+    "error": "#D78E86",
+    "error_bg": "#291A19",
+    "error_border": "#57302E",
+    "info": "#9DBBD0",
+    "info_bg": "#17232B",
+    "info_border": "#30495A",
 
-    # Dark mode (auto-applied via media query)
-    "dark_bg_primary": "#0C0C0C",
-    "dark_bg_secondary": "#141414",
-    "dark_bg_tertiary": "#1C1C1C",
-    "dark_bg_card": "#181818",
-    "dark_bg_card_hover": "#1F1F1F",
-    "dark_border_subtle": "#2A2A2A",
-    "dark_border_default": "#3A3A3A",
-    "dark_border_strong": "#4A4A4A",
-    "dark_text_primary": "#FAFAFA",
-    "dark_text_secondary": "#A1A1AA",
-    "dark_text_muted": "#71717A",
-    "dark_accent": "#D9A34E",
-    "dark_accent_hover": "#E8B460",
-    "dark_accent_light": "#2D2418",
-    "dark_accent_border": "#4A3A1E",
+    "dark_bg_primary": "#0B0E10",
+    "dark_bg_secondary": "#101518",
+    "dark_bg_tertiary": "#171D20",
+    "dark_bg_card": "#11171A",
+    "dark_bg_card_hover": "#161D21",
+    "dark_border_subtle": "#20292D",
+    "dark_border_default": "#303B40",
+    "dark_border_strong": "#465359",
+    "dark_text_primary": "#F0F2F1",
+    "dark_text_secondary": "#A7B0B1",
+    "dark_text_muted": "#778284",
+    "dark_accent": "#D6A06C",
+    "dark_accent_hover": "#E1B27E",
+    "dark_accent_light": "rgba(214, 160, 108, 0.12)",
+    "dark_accent_border": "rgba(214, 160, 108, 0.35)",
 }
 
 # Spacing scale (based on 4px unit)
@@ -147,13 +145,12 @@ def generate_css() -> str:
     return f"""
 <style>
 /* ============================================================
-   Atlas Design System - Professional UI Framework
-   Inspired by Claude's clean, minimal aesthetic
+   Quantbot - Refined research terminal
    ============================================================ */
 
 /* ─── CSS Custom Properties ──────────────────────────────── */
 :root {{
-    /* Light mode (default) */
+    /* Dark terminal palette */
     --color-bg-primary: {COLORS['bg_primary']};
     --color-bg-secondary: {COLORS['bg_secondary']};
     --color-bg-tertiary: {COLORS['bg_tertiary']};
@@ -185,6 +182,9 @@ def generate_css() -> str:
 
     --font-family: {TYPOGRAPHY['font_family']};
     --font-mono: {TYPOGRAPHY['font_mono']};
+    --line-tight: {TYPOGRAPHY['line_tight']};
+    --line-normal: {TYPOGRAPHY['line_normal']};
+    --line-relaxed: {TYPOGRAPHY['line_relaxed']};
     --radius-sm: {RADIUS['sm']};
     --radius-md: {RADIUS['md']};
     --radius-lg: {RADIUS['lg']};
@@ -249,7 +249,7 @@ html {{
 }}
 
 .block-container {{
-    padding-top: {SPACE['6']} !important;
+    padding-top: 4.5rem !important;
     padding-bottom: {SPACE['10']} !important;
     max-width: 1200px !important;
     font-family: var(--font-family);
@@ -257,13 +257,14 @@ html {{
     background-color: var(--color-bg-primary);
 }}
 
-/* Smooth animations */
-* {{
-    transition: background-color var(--transition-fast),
-                border-color var(--transition-fast),
-                color var(--transition-fast),
-                box-shadow var(--transition-fast),
-                transform var(--transition-fast);
+.stApp {{
+    background:
+        radial-gradient(900px circle at 84% -14%, rgba(214, 160, 108, 0.07), transparent 42%),
+        var(--color-bg-primary);
+}}
+
+.block-container {{
+    animation: pageEnter 360ms ease-out both;
 }}
 
 /* ─── Typography ─────────────────────────────────────────── */
@@ -335,6 +336,112 @@ kbd {{
     border: none;
 }}
 
+.page-header {{
+    position: relative;
+    margin: 0 0 {SPACE['8']};
+    padding: {SPACE['2']} 0 {SPACE['6']};
+    border-bottom: 1px solid var(--color-border-subtle);
+}}
+.page-header::after {{
+    content: "";
+    position: absolute;
+    bottom: -1px;
+    left: 0;
+    width: 56px;
+    height: 2px;
+    background: var(--color-accent);
+}}
+.page-eyebrow {{
+    margin: 0 0 {SPACE['2']};
+    color: var(--color-accent);
+    font-size: {TYPOGRAPHY['size_xs']};
+    font-weight: {TYPOGRAPHY['weight_semibold']};
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+}}
+.page-header h1 {{
+    margin: 0;
+    font-size: clamp(1.8rem, 3vw, 2.4rem);
+    letter-spacing: -0.035em;
+}}
+.page-description {{
+    max-width: 760px;
+    margin: {SPACE['2']} 0 0;
+    color: var(--color-text-secondary);
+    font-size: {TYPOGRAPHY['size_base']};
+}}
+
+.home-hero {{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: {SPACE['8']};
+    margin: {SPACE['4']} 0 {SPACE['10']};
+    padding: clamp(1.5rem, 4vw, 3rem);
+    overflow: hidden;
+    border: 1px solid var(--color-border-subtle);
+    border-radius: var(--radius-2xl);
+    background:
+        radial-gradient(600px circle at 90% 50%, rgba(214, 160, 108, 0.1), transparent 60%),
+        linear-gradient(140deg, #12181B 0%, #0E1214 70%);
+}}
+.home-hero-copy {{ max-width: 680px; }}
+.home-hero h1 {{
+    margin: {SPACE['2']} 0;
+    font-size: clamp(2.3rem, 4.2vw, 3.2rem);
+    letter-spacing: -0.06em;
+}}
+.home-hero .page-description {{
+    max-width: 600px;
+    font-size: {TYPOGRAPHY['size_lg']};
+}}
+.home-hero-mark {{
+    display: grid;
+    width: clamp(96px, 16vw, 180px);
+    aspect-ratio: 1;
+    flex: 0 0 auto;
+    place-items: center;
+    border: 1px solid rgba(214, 160, 108, 0.24);
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(214, 160, 108, 0.1), transparent 68%);
+}}
+.home-hero-mark svg {{ width: 58%; height: 58%; }}
+.section-heading {{
+    margin: {SPACE['10']} 0 {SPACE['4']};
+    font-size: {TYPOGRAPHY['size_xl']};
+    font-weight: {TYPOGRAPHY['weight_semibold']};
+    letter-spacing: -0.02em;
+}}
+.feature-card {{
+    min-height: 180px;
+    padding: {SPACE['6']};
+    border: 1px solid var(--color-border-subtle);
+    border-radius: var(--radius-xl);
+    background: linear-gradient(145deg, var(--color-bg-card), #0E1316);
+    transition: border-color var(--transition-normal), transform var(--transition-normal), box-shadow var(--transition-normal);
+}}
+.feature-card:hover {{
+    transform: translateY(-3px);
+    border-color: var(--color-accent-border);
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.22);
+}}
+.feature-index {{
+    color: var(--color-accent);
+    font-family: var(--font-mono);
+    font-size: {TYPOGRAPHY['size_xs']};
+    letter-spacing: 0.08em;
+}}
+.feature-card h3 {{
+    margin: {SPACE['4']} 0 {SPACE['2']};
+    color: var(--color-text-primary);
+    font-size: {TYPOGRAPHY['size_lg']};
+}}
+.feature-card p {{
+    margin: 0;
+    color: var(--color-text-secondary);
+    font-size: {TYPOGRAPHY['size_sm']};
+}}
+
 /* ─── Cards ──────────────────────────────────────────────── */
 .card {{
     background-color: var(--color-bg-card);
@@ -390,6 +497,9 @@ kbd {{
     transition: all var(--transition-fast) !important;
     cursor: pointer !important;
     white-space: nowrap;
+}}
+.stButton > button p {{
+    color: inherit !important;
 }}
 
 /* Primary button */
@@ -574,6 +684,18 @@ kbd {{
     overflow: hidden !important;
     box-shadow: var(--shadow-sm) !important;
 }}
+.stForm {{
+    padding: {SPACE['5']};
+    border: 1px solid var(--color-border-subtle);
+    border-radius: var(--radius-xl);
+    background: rgba(16, 21, 24, 0.62);
+}}
+.stChatInput textarea {{
+    background-color: var(--color-bg-card) !important;
+    border-color: var(--color-border-default) !important;
+    border-radius: var(--radius-lg) !important;
+    color: var(--color-text-primary) !important;
+}}
 .stDataFrame [data-testid="stTable"] {{
     background-color: var(--color-bg-card) !important;
 }}
@@ -621,38 +743,97 @@ kbd {{
 
 /* ─── Sidebar ────────────────────────────────────────────── */
 [data-testid="stSidebar"] {{
-    background-color: var(--color-bg-secondary) !important;
+    background: linear-gradient(180deg, #101518 0%, #0B0E10 100%) !important;
     border-right: 1px solid var(--color-border-subtle) !important;
 }}
+[data-testid="stSidebarNav"] {{ display: none !important; }}
 [data-testid="stSidebar"] .block-container {{
     padding-top: {SPACE['6']} !important;
+}}
+[data-testid="stSidebar"] [data-testid="stSidebarUserContent"] {{
+    padding: {SPACE['5']} {SPACE['4']} {SPACE['8']} !important;
 }}
 [data-testid="stSidebar"] h1,
 [data-testid="stSidebar"] h2,
 [data-testid="stSidebar"] h3 {{
     color: var(--color-text-primary) !important;
 }}
-[data-testid="stSidebar"] .stPageLink > a {{
+[data-testid="stSidebar"] .quantbot-sidebar-brand {{
+    display: flex;
+    align-items: center;
+    gap: {SPACE['3']};
+    margin: 0 0 {SPACE['8']};
+    padding: {SPACE['2']} 0 {SPACE['6']};
+    border-bottom: 1px solid var(--color-border-subtle);
+}}
+[data-testid="stSidebar"] .quantbot-brand-mark {{
+    display: grid;
+    width: 42px;
+    height: 42px;
+    flex: 0 0 auto;
+    place-items: center;
+    border: 1px solid rgba(214, 160, 108, 0.3);
+    border-radius: 13px;
+    background: rgba(214, 160, 108, 0.08);
+}}
+[data-testid="stSidebar"] .quantbot-brand-mark svg {{ width: 28px; height: 28px; }}
+[data-testid="stSidebar"] .quantbot-brand-name {{
+    margin: 0;
+    color: var(--color-text-primary);
+    font-size: 1.08rem;
+    font-weight: 650;
+    letter-spacing: -0.035em;
+}}
+[data-testid="stSidebar"] .quantbot-brand-caption {{
+    margin: 0.16rem 0 0;
+    color: var(--color-text-muted);
+    font-size: 0.62rem;
+    letter-spacing: 0.09em;
+    text-transform: uppercase;
+}}
+[data-testid="stSidebar"] .quantbot-nav-label {{
+    margin: 0 0 {SPACE['2']};
+    color: var(--color-text-muted);
+    font-size: {TYPOGRAPHY['size_xs']};
+    font-weight: {TYPOGRAPHY['weight_semibold']};
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+}}
+[data-testid="stSidebar"] .stPageLink > a,
+[data-testid="stSidebar"] a[data-testid="stPageLink-NavLink"] {{
+    display: flex !important;
+    align-items: center !important;
     font-family: var(--font-family) !important;
     font-size: {TYPOGRAPHY['size_sm']} !important;
     font-weight: {TYPOGRAPHY['weight_medium']} !important;
     color: var(--color-text-secondary) !important;
     background-color: transparent !important;
-    border: none !important;
+    border: 1px solid transparent !important;
     border-radius: var(--radius-md) !important;
-    padding: {SPACE['2']} {SPACE['3']} !important;
-    margin: {SPACE['1']} 0 !important;
-    transition: all var(--transition-fast) !important;
+    padding: {SPACE['3']} {SPACE['3']} !important;
+    margin: 2px 0 !important;
+    transition: color var(--transition-fast), background-color var(--transition-fast), border-color var(--transition-fast) !important;
 }}
-[data-testid="stSidebar"] .stPageLink > a:hover {{
-    background-color: var(--color-bg-tertiary) !important;
-    color: var(--color-text-primary) !important;
+[data-testid="stSidebar"] .stPageLink > a:hover,
+[data-testid="stSidebar"] a[data-testid="stPageLink-NavLink"]:hover {{
+    background-color: var(--color-accent-light) !important;
+    border-color: var(--color-accent-border) !important;
+    color: var(--color-accent) !important;
     text-decoration: none !important;
 }}
-[data-testid="stSidebar"] .stPageLink > a[aria-current="page"] {{
+[data-testid="stSidebar"] .stPageLink > a[aria-current="page"],
+[data-testid="stSidebar"] a[data-testid="stPageLink-NavLink"][aria-current="page"] {{
     background-color: var(--color-accent-light) !important;
+    border-color: var(--color-accent-border) !important;
     color: var(--color-accent) !important;
-    border-left: 3px solid var(--color-accent) !important;
+}}
+[data-testid="stSidebar"] .quantbot-sidebar-footer {{
+    margin-top: {SPACE['8']};
+    padding-top: {SPACE['4']};
+    border-top: 1px solid var(--color-border-subtle);
+    color: var(--color-text-muted);
+    font-size: {TYPOGRAPHY['size_xs']};
+    line-height: 1.5;
 }}
 
 /* ─── Chat Messages ──────────────────────────────────────── */
@@ -672,29 +853,15 @@ kbd {{
 /* ─── Alerts / Status ────────────────────────────────────── */
 .stAlert {{
     border-radius: var(--radius-lg) !important;
-    border: 1px solid !important;
-    padding: {SPACE['4']} {SPACE['5']} !important;
+    border: 1px solid var(--color-border-subtle) !important;
+    background-color: var(--color-bg-card) !important;
+    padding: 0 !important;
     font-size: {TYPOGRAPHY['size_sm']} !important;
 }}
-.stAlert.success {{
-    background-color: var(--color-success-bg) !important;
-    border-color: var(--color-success-border) !important;
-    color: var(--color-success) !important;
-}}
-.stAlert.warning {{
-    background-color: var(--color-warning-bg) !important;
-    border-color: var(--color-warning-border) !important;
-    color: var(--color-warning) !important;
-}}
-.stAlert.error {{
-    background-color: var(--color-error-bg) !important;
-    border-color: var(--color-error-border) !important;
-    color: var(--color-error) !important;
-}}
-.stAlert.info {{
-    background-color: var(--color-info-bg) !important;
-    border-color: var(--color-info-border) !important;
-    color: var(--color-info) !important;
+.stAlert .stAlertContainer {{
+    background-color: var(--color-bg-card) !important;
+    border: none !important;
+    color: var(--color-text-secondary) !important;
 }}
 
 /* ─── Progress Bar ───────────────────────────────────────── */
@@ -757,6 +924,10 @@ kbd {{
     from {{ opacity: 0; transform: translateY(8px); }}
     to {{ opacity: 1; transform: translateY(0); }}
 }}
+@keyframes pageEnter {{
+    from {{ opacity: 0; transform: translateY(6px); }}
+    to {{ opacity: 1; transform: translateY(0); }}
+}}
 @keyframes slideIn {{
     from {{ opacity: 0; transform: translateX(-10px); }}
     to {{ opacity: 1; transform: translateX(0); }}
@@ -795,6 +966,17 @@ kbd {{
     }}
 }}
 
+@media (max-width: 1300px) {{
+    .home-hero {{ gap: 1.5rem; padding: 1.5rem; }}
+    .home-hero-mark {{ width: 112px; }}
+}}
+
+@media (max-width: 700px) {{
+    .home-hero {{ align-items: flex-start; }}
+    .home-hero-mark {{ display: none; }}
+    .block-container {{ padding-left: 1rem !important; padding-right: 1rem !important; }}
+}}
+
 /* ─── Print Styles ───────────────────────────────────────── */
 @media print {{
     .stButton, .stTextInput, .stSelectbox, .stSlider,
@@ -815,10 +997,24 @@ def apply_design_system():
     st.markdown(generate_css(), unsafe_allow_html=True)
 
 
-def page_config(title: str, icon: str = "⚡", layout: str = "wide", sidebar: str = "expanded"):
+def render_page_header(eyebrow: str, title: str, description: str) -> None:
+    """Render a consistent editorial header for a page."""
+    st.markdown(
+        f"""
+        <div class="page-header">
+            <p class="page-eyebrow">{escape(eyebrow)}</p>
+            <h1>{escape(title)}</h1>
+            <p class="page-description">{escape(description)}</p>
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
+
+
+def page_config(title: str, icon: Path = QUANTBOT_ICON, layout: str = "wide", sidebar: str = "expanded"):
     """Standardized page config with consistent settings."""
     st.set_page_config(
-        page_title=f"{title} — Atlas",
+        page_title=f"{title} — Quantbot",
         page_icon=icon,
         layout=layout,
         initial_sidebar_state=sidebar,

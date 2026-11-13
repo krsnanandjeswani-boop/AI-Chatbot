@@ -3,34 +3,22 @@ import json
 
 from strategy_generator import generate_strategy, critique_strategy
 from backtester import backtest_strategy
-from sidebar_style import apply_sidebar_css
+from nav import render_sidebar
+from ui_styles import QUANTBOT_ICON, apply_design_system, render_page_header
 
-st.set_page_config(page_title="Strategy Generator — Atlas", page_icon="⚡", layout="wide")
+st.set_page_config(page_title="Strategy Generator — Quantbot", page_icon=QUANTBOT_ICON, layout="wide")
 
-apply_sidebar_css()
+apply_design_system()
+render_sidebar()
 
-# Premium styling
-st.markdown("""
-<style>
-#MainMenu {visibility: hidden;}
-footer {visibility: hidden;}
-.block-container {padding-top: 2rem; max-width: 1100px;}
-h1 {font-weight: 700; letter-spacing: -0.02em; background: linear-gradient(135deg, #FFFFFF 0%, #B0B0B0 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;}
-h2 {font-weight: 600; color: #FFFFFF;}
-.stButton > button {background: linear-gradient(135deg, #D97757 0%, #B85D42 100%); color: white; border: none; border-radius: 8px; transition: all 0.3s ease;}
-.stButton > button:hover {background: linear-gradient(135deg, #E88A6B 0%, #D97757 100%); box-shadow: 0 6px 20px rgba(217, 119, 87, 0.4); transform: translateY(-2px);}
-.stTextInput > div > div > input, .stTextArea > div > div > textarea {background-color: #1A1A1A; border: 1px solid #2A2A2A; border-radius: 8px;}
-.stTabs [data-baseweb="tab-list"] {gap: 6px;}
-.stTabs [data-baseweb="tab"] {background-color: #1A1A1A; border: 1px solid #2A2A2A; border-radius: 8px;}
-.stTabs [aria-selected="true"] {background: linear-gradient(135deg, #D97757 0%, #B85D42 100%); border-color: #D97757;}
-</style>
-""", unsafe_allow_html=True)
-
-st.title("Strategy Generator")
-st.caption("LLM-powered strategy design with multi-asset flexibility")
+render_page_header(
+    "Strategy lab",
+    "Strategy Generator",
+    "Turn a market thesis into systematic entry, exit, and risk-management rules.",
+)
 
 with st.container():
-    col1, col2 = st.columns([2, 1])
+    col1, col2 = st.columns(2)
     with col1:
         symbol = st.text_input(
             "Ticker / Universe (optional)",
@@ -130,17 +118,17 @@ if "last_strategy" in st.session_state:
     st.markdown("---")
     col_c, col_d = st.columns(2)
     with col_c:
-        if st.button("💾 Save to Database", width="stretch"):
+        if st.button("Save to Strategy Library", width="stretch"):
             try:
                 from strategy_database import save_strategy
                 from final import detect_market_regime
                 universe = strategy.get('universe', ['SPY'])
                 regime = detect_market_regime(universe[0])
                 save_strategy(strategy, {"sharpe": 0, "max_drawdown": 0, "cagr": 0}, regime, "Generated via Strategy Generator")
-                st.success("✅ Saved to database!")
+                st.success("Saved to the Strategy Library.")
             except Exception as e:
                 st.error(f"Error: {str(e)}")
     with col_d:
-        st.info("💡 Go to Strategy Database to load and backtest saved strategies")
+        st.info("Open Strategy Library to review and reuse saved strategies.")
 else:
     st.info("Generate a strategy to get started. Leave the ticker field blank to let the AI choose the optimal universe.")

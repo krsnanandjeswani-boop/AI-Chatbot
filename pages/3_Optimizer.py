@@ -3,17 +3,22 @@ import pandas as pd
 
 from backtester import get_default_universe
 from optimizer import grid_optimize
-from sidebar_style import apply_sidebar_css
+from nav import render_sidebar
+from ui_styles import QUANTBOT_ICON, apply_design_system, render_page_header
 
-st.set_page_config(page_title="Optimizer — Atlas", page_icon="⚡", layout="wide")
+st.set_page_config(page_title="Grid Optimizer — Quantbot", page_icon=QUANTBOT_ICON, layout="wide")
 
-apply_sidebar_css()
+apply_design_system()
+render_sidebar()
 
-st.title("🔍 Grid Search Optimizer")
-st.caption("Systematically search SMA / EMA / RSI parameter space for the best-performing strategy.")
+render_page_header(
+    "Parameter research",
+    "Grid Optimizer",
+    "Compare indicator settings systematically and surface the strongest candidates.",
+)
 
 with st.form(key="opt_form"):
-    st.subheader("🔧 Universe & Parameters")
+    st.subheader("Universe and parameters")
 
     col1, col2 = st.columns(2)
     with col1:
@@ -26,7 +31,7 @@ with st.form(key="opt_form"):
         top_n = st.slider("Top N Results to Show", 3, 20, 5)
 
     st.markdown("---")
-    st.subheader("📐 Parameter Grid")
+    st.subheader("Parameter grid")
     row1, row2, row3 = st.columns(3)
     with row1:
         sma_fast_str = st.text_input("SMA Fast", value="10,15,20,25,30", help="Comma-separated values")
@@ -35,7 +40,7 @@ with st.form(key="opt_form"):
     with row3:
         rsi_str = st.text_input("RSI Filter", value="55", help="Comma-separated values")
 
-    submitted = st.form_submit_button("🔍 Run Grid Search", type="primary")
+    submitted = st.form_submit_button("Run Grid Search", type="primary")
 
 if submitted:
     universe = [s.strip().upper() for s in symbol.split(",")] if symbol else get_default_universe()
@@ -82,7 +87,7 @@ if submitted:
         )
 
         st.markdown("---")
-        st.subheader("🏆 Best Strategy Detail")
+        st.subheader("Best strategy")
         best = results[0]
         strat = best.get("strategy", {})
 
@@ -91,7 +96,7 @@ if submitted:
         col2.metric("Sharpe Ratio", f"{best.get('sharpe', 0):.2f}")
         col3.metric("CAGR", f"{best.get('cagr', 0):.2%}")
 
-        tab1, tab2, tab3 = st.tabs(["📋 Details", "🔑 Entry", "🚪 Exit"])
+        tab1, tab2, tab3 = st.tabs(["Details", "Entry rules", "Exit rules"])
         with tab1:
             st.json(strat)
         with tab2:
@@ -104,5 +109,5 @@ if submitted:
         st.session_state["last_strategy"] = strat
 
 else:
-    st.info("📝 Configure the parameter grid and click **Run Grid Search**.")
+    st.info("Configure the parameter grid, then run the search.")
     st.markdown("**Default universe:** " + ", ".join(get_default_universe()))

@@ -1,36 +1,53 @@
 import streamlit as st
-from ui_styles import apply_design_system
 
-# Apply design system to sidebar
-apply_design_system()
 
-with st.sidebar:
-    st.markdown("""
-    <div style="padding: 0.5rem 0 1.5rem 0; border-bottom: 1px solid var(--color-border-subtle); margin-bottom: 1rem;">
-        <h1 style="margin: 0; font-size: 1.5rem; font-weight: 700; letter-spacing: -0.02em;
-                   background: linear-gradient(135deg, var(--color-text-primary) 0%, var(--color-text-secondary) 100%);
-                   -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">
-            ⚡ Atlas
-        </h1>
-        <p style="margin: 0.25rem 0 0 0; font-size: 0.75rem; color: var(--color-text-muted); font-weight: 500;">
-            Quantitative Research Terminal
-        </p>
-    </div>
-    """, unsafe_allow_html=True)
+_PAGES = (
+    ("app.py", "Overview"),
+    ("pages/1_Strategy_Generator.py", "Strategy Generator"),
+    ("pages/2_Backtester.py", "Backtest Lab"),
+    ("pages/3_Optimizer.py", "Grid Optimizer"),
+    ("pages/4_Genetic_Evolution.py", "Genetic Evolution"),
+    ("pages/5_Charts.py", "Market Charts"),
+    ("pages/6_Strategy_Database.py", "Strategy Library"),
+    ("pages/7_Chat.py", "AI Research"),
+)
 
-    st.page_link("app.py", label="Home", icon="🏠")
-    st.page_link("pages/1_Strategy_Generator.py", label="Strategy Generator", icon="🎯")
-    st.page_link("pages/2_Backtester.py", label="Backtester", icon="⚡")
-    st.page_link("pages/3_Optimizer.py", label="Optimizer", icon="🔍")
-    st.page_link("pages/4_Genetic_Evolution.py", label="Genetic Evolution", icon="🧬")
-    st.page_link("pages/5_Charts.py", label="Charts", icon="📈")
-    st.page_link("pages/6_Strategy_Database.py", label="Strategy Database", icon="💾")
-    st.page_link("pages/7_Chat.py", label="AI Chat", icon="💬")
 
-    st.markdown("""
-    <div style="margin-top: 2rem; padding-top: 1.5rem; border-top: 1px solid var(--color-border-subtle);">
-        <p style="font-size: 0.75rem; color: var(--color-text-muted); margin: 0;">
-            Research & educational purposes only
-        </p>
-    </div>
-    """, unsafe_allow_html=True)
+def render_sidebar() -> None:
+    with st.sidebar:
+        st.markdown(
+            """
+            <div class="quantbot-sidebar-brand">
+                <div class="quantbot-brand-mark">
+                    <svg viewBox="0 0 32 32" fill="none" aria-hidden="true">
+                        <path d="M24.1 22.8a10.5 10.5 0 1 1 2.4-6.7"
+                              stroke="#D6A06C" stroke-width="2.2" stroke-linecap="round"/>
+                        <path d="m20.6 20.7 6.1 6.1"
+                              stroke="#D6A06C" stroke-width="2.2" stroke-linecap="round"/>
+                        <path d="m9.2 18.5 4.1-4.1 3.2 2.4 5.3-6"
+                              stroke="#F0F2F1" stroke-width="1.8"
+                              stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                </div>
+                <div>
+                    <p class="quantbot-brand-name">Quantbot</p>
+                    <p class="quantbot-brand-caption">Research terminal</p>
+                </div>
+            </div>
+            <p class="quantbot-nav-label">Workspace</p>
+            """,
+            unsafe_allow_html=True,
+        )
+
+        for page_path, label in _PAGES:
+            st.page_link(page_path, label=label)
+
+        st.markdown(
+            """
+            <div class="quantbot-sidebar-footer">
+                Quantitative research tools<br>
+                For educational use
+            </div>
+            """,
+            unsafe_allow_html=True,
+        )

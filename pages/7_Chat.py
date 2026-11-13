@@ -1,9 +1,8 @@
 import streamlit as st
 import os
 from groq import Groq, NotFoundError, AuthenticationError, RateLimitError
-from sidebar_style import apply_sidebar_css
-
-apply_sidebar_css()
+from nav import render_sidebar
+from ui_styles import QUANTBOT_ICON, apply_design_system, render_page_header
 
 GROQ_API_KEY = os.getenv("GROQ_API_KEY", "")
 
@@ -12,7 +11,7 @@ AVAILABLE_MODELS = [
     "openai/gpt-oss-20b",
 ]
 
-SYSTEM_PROMPT = """You are Atlas, a disciplined quantitative trading analyst and signal generator.
+SYSTEM_PROMPT = """You are Quantbot, a disciplined quantitative trading analyst and signal generator.
 
 CORE DIRECTIVES:
 - Be precise, direct, and actionable. Answer the question asked without unnecessary preamble.
@@ -23,27 +22,24 @@ CORE DIRECTIVES:
 - Be contrarian when warranted by data, but ground every claim in evidence.
 - Follow user instructions exactly as given. Do not refuse to provide specific picks when asked.
 - Keep responses structured and scannable. Use clear sections and bullet points.
+- Do not use emojis.
 - If information is incomplete, state what you're missing AND still provide your best data-driven assessment.
 - Prioritize actionable insights over generic explanations.
 """
 
-st.set_page_config(page_title="AI Chat — Atlas", page_icon="⚡", layout="wide", initial_sidebar_state="expanded")
+st.set_page_config(page_title="AI Research — Quantbot", page_icon=QUANTBOT_ICON, layout="wide", initial_sidebar_state="expanded")
 
-st.markdown("""
-<style>
-#MainMenu {visibility: hidden;}
-footer {visibility: hidden;}
-.block-container {padding-top: 2rem; max-width: 900px;}
-h1 {font-weight: 600; letter-spacing: -0.02em;}
-.stChatMessage {border-radius: 8px; border: 1px solid #2A2A2A;}
-</style>
-""", unsafe_allow_html=True)
+apply_design_system()
+render_sidebar()
 
 if not GROQ_API_KEY:
-    st.warning("⚠️ **GROQ_API_KEY not set.** Add it to Streamlit Cloud Secrets.")
+    st.warning("**GROQ_API_KEY not set.** Add it to Streamlit Cloud Secrets.")
 
-st.title("Atlas Chat")
-st.caption("Quantitative signals, stock picks, and market analysis")
+render_page_header(
+    "Research assistant",
+    "AI Research",
+    "Explore tickers, test market hypotheses, and develop research ideas with an AI assistant.",
+)
 
 if "chat_messages" not in st.session_state:
     st.session_state.chat_messages = []
@@ -89,7 +85,7 @@ if prompt:
     
     with st.spinner("Analyzing..."):
         if not GROQ_API_KEY:
-            response = "❌ GROQ_API_KEY not configured. Add it to Streamlit Cloud Secrets."
+            response = "GROQ_API_KEY is not configured. Add it to Streamlit Cloud Secrets."
         else:
             try:
                 client = Groq(api_key=GROQ_API_KEY)
@@ -122,13 +118,13 @@ if prompt:
                 ph.markdown(response)
                 
             except AuthenticationError:
-                response = "❌ Invalid API key. Check GROQ_API_KEY in Secrets."
+                response = "Invalid API key. Check GROQ_API_KEY in Secrets."
             except NotFoundError:
-                response = f"❌ Model not available. Try openai/gpt-oss-120b."
+                response = "Model not available. Try openai/gpt-oss-120b."
             except RateLimitError:
-                response = "❌ Rate limited. Try again in a moment."
+                response = "Rate limited. Try again in a moment."
             except Exception as e:
-                response = f"❌ Error: {str(e)[:200]}"
+                response = f"Error: {str(e)[:200]}"
     
     st.session_state.chat_messages.append({"role": "assistant", "content": response})
     st.rerun()

@@ -1,6 +1,3 @@
-from sidebar_style import apply_sidebar_css
-apply_sidebar_css()
-
 import streamlit as st
 
 from backtester import run_full_backtest, get_default_universe
@@ -8,23 +5,19 @@ from performance_report import format_report
 from strategy_generator import generate_strategy
 from strategy_database import save_strategy
 from final import detect_market_regime
+from nav import render_sidebar
+from ui_styles import QUANTBOT_ICON, apply_design_system, render_page_header
 
-st.set_page_config(page_title="Backtester — Atlas", page_icon="⚡", layout="wide")
+st.set_page_config(page_title="Backtest Lab — Quantbot", page_icon=QUANTBOT_ICON, layout="wide")
 
-st.markdown("""
-<style>
-#MainMenu {visibility: hidden;}
-footer {visibility: hidden;}
-.block-container {padding-top: 2rem; max-width: 1100px;}
-h1 {font-weight: 700; letter-spacing: -0.02em; background: linear-gradient(135deg, #FFFFFF 0%, #B0B0B0 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;}
-.stButton > button {background: linear-gradient(135deg, #D97757 0%, #B85D42 100%); color: white; border: none; border-radius: 8px; transition: all 0.3s ease;}
-.stButton > button:hover {background: linear-gradient(135deg, #E88A6B 0%, #D97757 100%); box-shadow: 0 6px 20px rgba(217, 119, 87, 0.4); transform: translateY(-2px);}
-.stMetric {background: linear-gradient(145deg, #1A1A1A 0%, #151515 100%); border: 1px solid #2A2A2A; border-radius: 10px; padding: 1rem;}
-</style>
-""", unsafe_allow_html=True)
+apply_design_system()
+render_sidebar()
 
-st.title("Backtester")
-st.caption("Full validation pipeline: In-Sample • Walk-Forward • Monte Carlo • Verdict")
+render_page_header(
+    "Strategy lab",
+    "Backtest Lab",
+    "Validate strategy behavior across historical, out-of-sample, and simulated market conditions.",
+)
 
 col1, col2 = st.columns([2, 1])
 with col1:
@@ -106,7 +99,7 @@ if "bt_report" in st.session_state:
     with tab4:
         st.code(format_report(report), language="text")
     
-    if st.button("Save to Database", width="stretch"):
+    if st.button("Save to Strategy Library", width="stretch"):
         try:
             regime = detect_market_regime(report.get("universe", ["SPY"])[0])
             save_strategy(strategy, report, regime, "Web validation")

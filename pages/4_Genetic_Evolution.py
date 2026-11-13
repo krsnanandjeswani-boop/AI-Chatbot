@@ -4,17 +4,22 @@ import pandas as pd
 
 from backtester import get_default_universe
 from genetic_optimizer import evolve_strategies
-from sidebar_style import apply_sidebar_css
+from nav import render_sidebar
+from ui_styles import QUANTBOT_ICON, apply_design_system, render_page_header
 
-st.set_page_config(page_title="Genetic Evolution — Atlas", page_icon="⚡", layout="wide")
+st.set_page_config(page_title="Genetic Evolution — Quantbot", page_icon=QUANTBOT_ICON, layout="wide")
 
-apply_sidebar_css()
+apply_design_system()
+render_sidebar()
 
-st.title("🧬 Genetic Algorithm Strategy Evolution")
-st.caption("Evolve a population of SMA/RSI strategies across multiple generations to discover robust, high-Sharpe configurations.")
+render_page_header(
+    "Parameter research",
+    "Genetic Evolution",
+    "Evolve a population of candidate strategies and compare the strongest configurations.",
+)
 
 with st.form(key="evo_form"):
-    st.subheader("🧬 Evolution Settings")
+    st.subheader("Evolution settings")
 
     col1, col2 = st.columns(2)
     with col1:
@@ -27,7 +32,7 @@ with st.form(key="evo_form"):
         generations = st.slider("Generations", 5, 50, 30, help="Number of evolution generations")
         population_size = st.slider("Population Size", 10, 50, 20, help="Strategies per generation")
 
-    submitted = st.form_submit_button("🧪 Start Evolution", type="primary")
+    submitted = st.form_submit_button("Start Evolution", type="primary")
 
 if submitted:
     universe = [s.strip().upper() for s in symbol.split(",")] if symbol else get_default_universe()
@@ -61,7 +66,7 @@ if submitted:
         st.session_state["last_strategy"] = best_strategy
 
         # --- Best parameters ---
-        st.subheader("🏆 Best Evolved Strategy")
+        st.subheader("Best evolved strategy")
         col1, col2, col3, col4 = st.columns(4)
         col1.metric("SMA Fast", best_params.get("sma_fast", "N/A"))
         col2.metric("SMA Slow", best_params.get("sma_slow", "N/A"))
@@ -70,7 +75,7 @@ if submitted:
 
         # --- Best metrics ---
         st.markdown("---")
-        st.subheader("📊 Best Strategy Metrics (In-Sample)")
+        st.subheader("In-sample metrics")
         cols = st.columns(4)
         cols[0].metric("CAGR", f"{best_metrics.get('cagr', 0):.2%}")
         cols[1].metric("Sharpe", f"{best_metrics.get('sharpe', 0):.2f}")
@@ -100,17 +105,17 @@ if submitted:
                             f"P(25% DD) = {mc.get('prob_ruin_25pct_dd', 0):.2%}")
 
         # --- Strategy JSON ---
-        with st.expander("📋 Full Strategy JSON"):
+        with st.expander("Full strategy JSON"):
             st.json(best_strategy)
 
         # --- Save to DB ---
-        if st.button("💾 Save to Strategy Database"):
+        if st.button("Save to Strategy Library"):
             from strategy_database import save_strategy
             from final import detect_market_regime
             regime = detect_market_regime(universe[0])
             save_strategy(best_strategy, validation, regime, "Genetic evolution")
-            st.success("✅ Saved to database!")
+            st.success("Saved to the Strategy Library.")
 
 else:
-    st.info("📝 Configure evolution parameters and click **Start Evolution**.")
+    st.info("Configure evolution parameters, then start the run.")
     st.markdown("**Default universe:** " + ", ".join(get_default_universe()))

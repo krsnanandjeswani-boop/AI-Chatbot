@@ -1,39 +1,33 @@
-from sidebar_style import apply_sidebar_css
-apply_sidebar_css()
-
 import streamlit as st
 import pandas as pd
 import json
 
 from strategy_database import query_strategies, rename_strategy, delete_strategy
+from nav import render_sidebar
+from ui_styles import QUANTBOT_ICON, apply_design_system, render_page_header
 
-st.set_page_config(page_title="Strategy Database — Atlas", page_icon="⚡", layout="wide")
+st.set_page_config(page_title="Strategy Library — Quantbot", page_icon=QUANTBOT_ICON, layout="wide")
 
-st.markdown("""
-<style>
-#MainMenu {visibility: hidden;}
-footer {visibility: hidden;}
-.block-container {padding-top: 2rem; max-width: 1100px;}
-h1 {font-weight: 700; letter-spacing: -0.02em; background: linear-gradient(135deg, #FFFFFF 0%, #B0B0B0 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;}
-.stButton > button {background: linear-gradient(135deg, #D97757 0%, #B85D42 100%); color: white; border: none; border-radius: 8px;}
-.stMetric {background: linear-gradient(145deg, #1A1A1A 0%, #151515 100%); border: 1px solid #2A2A2A; border-radius: 10px; padding: 1rem;}
-</style>
-""", unsafe_allow_html=True)
+apply_design_system()
+render_sidebar()
 
-st.title("Strategy Database")
-st.caption("Load, backtest, optimize, and evolve saved strategies")
+render_page_header(
+    "Research library",
+    "Strategy Library",
+    "Keep validated strategies organized and ready to reuse across research tools.",
+)
 
 with st.sidebar:
     st.header("Filters")
     sharpe_threshold = st.slider("Min Sharpe", 0.0, 2.0, 0.0, 0.1)
     regime_filter = st.selectbox("Regime", ["all"], index=0)
-    if st.button("Refresh"):
+    if st.button("Refresh library"):
         st.rerun()
 
 strategies = query_strategies(sharpe_gt=sharpe_threshold, regime=regime_filter)
 
 if not strategies:
-    st.info("No strategies saved yet. Generate one in Strategy Generator and click 'Save to Database'.")
+    st.info("No strategies saved yet. Generate one and save it to the Strategy Library.")
 else:
     st.success(f"{len(strategies)} strategies found")
     
@@ -57,12 +51,12 @@ else:
     strat_id = selected.get("id")
     strat_json = selected.get("parameters", {})
     
-    st.markdown("### Load Into Tools")
+    st.markdown("### Use this strategy")
     col1, col2, col3, col4 = st.columns(4)
     with col1:
         if st.button("Load for Backtest", width="stretch"):
             st.session_state["loaded_strategy"] = strat_json
-            st.success("Loaded. Go to Backtester to run full validation.")
+            st.success("Loaded. Go to Backtest Lab to run full validation.")
     with col2:
         if st.button("Load for Optimizer", width="stretch"):
             st.session_state["loaded_strategy_opt"] = strat_json
@@ -93,7 +87,7 @@ else:
                 st.warning("Deleted")
                 st.rerun()
     
-    tab1, tab2 = st.tabs(["Strategy Details", "Metrics"])
+    tab1, tab2 = st.tabs(["Strategy details", "Metrics"])
     with tab1:
         st.json(strat_json)
     with tab2:
