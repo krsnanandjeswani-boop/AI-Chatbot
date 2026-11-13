@@ -61,14 +61,14 @@ COLORS = {
 }
 
 BACKGROUND_VARIANTS = {
-    "overview": ("88% -12%", "12% 88%", "44s"),
-    "strategy-generator": ("18% 5%", "90% 88%", "50s"),
-    "backtest-lab": ("78% 24%", "12% 92%", "48s"),
-    "grid-optimizer": ("14% 20%", "86% 82%", "40s"),
-    "genetic-evolution": ("48% 108%", "4% 16%", "54s"),
-    "market-charts": ("86% 12%", "20% 94%", "42s"),
-    "strategy-library": ("24% 94%", "90% 8%", "58s"),
-    "ai-research": ("68% -8%", "14% 78%", "46s"),
+    "overview": ("88% -12%", "12% 88%", "24s"),
+    "strategy-generator": ("18% 5%", "90% 88%", "28s"),
+    "backtest-lab": ("78% 24%", "12% 92%", "26s"),
+    "grid-optimizer": ("14% 20%", "86% 82%", "20s"),
+    "genetic-evolution": ("48% 108%", "4% 16%", "30s"),
+    "market-charts": ("86% 12%", "20% 94%", "22s"),
+    "strategy-library": ("24% 94%", "90% 8%", "32s"),
+    "ai-research": ("68% -8%", "14% 78%", "26s"),
 }
 
 # Spacing scale (based on 4px unit)
@@ -286,8 +286,8 @@ html {{
     z-index: -1;
     pointer-events: none;
     background:
-        radial-gradient(760px circle at var(--ambient-glow-one), rgba(214, 160, 108, 0.13), transparent 64%),
-        radial-gradient(560px circle at var(--ambient-glow-two), rgba(214, 160, 108, 0.065), transparent 70%);
+        radial-gradient(760px circle at var(--ambient-glow-one), rgba(214, 160, 108, 0.23), transparent 64%),
+        radial-gradient(560px circle at var(--ambient-glow-two), rgba(214, 160, 108, 0.11), transparent 70%);
     animation: ambientDrift var(--ambient-motion-duration) ease-in-out infinite alternate;
     will-change: transform;
 }}
@@ -969,8 +969,8 @@ kbd {{
     to {{ transform: rotate(360deg); }}
 }}
 @keyframes ambientDrift {{
-    from {{ transform: translate3d(-1.2%, -0.8%, 0) scale(1); }}
-    to {{ transform: translate3d(1.2%, 0.8%, 0) scale(1.035); }}
+    from {{ transform: translate3d(-3%, -2%, 0) scale(1); }}
+    to {{ transform: translate3d(3%, 2%, 0) scale(1.06); }}
 }}
 
 .animate-fade-in {{ animation: fadeIn var(--transition-slow) ease-out; }}
