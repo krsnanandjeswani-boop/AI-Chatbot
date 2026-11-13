@@ -86,6 +86,7 @@ def format_report(report):
     strategy = report.get("strategy", {})
     universe = report.get("universe", [])
     is_metrics = report.get("in_sample_metrics", {})
+    benchmark = report.get("benchmark_metrics", {})
     wf = report.get("walk_forward", {})
     mc = report.get("monte_carlo", {})
     verdict = report.get("verdict", "N/A")
@@ -115,22 +116,25 @@ def format_report(report):
 [1] IN-SAMPLE BACKTEST
 {_fmt_metrics(is_metrics, indent='    ')}
 
-[2] WALK-FORWARD (OUT-OF-SAMPLE)
+[2] EQUAL-WEIGHT, DAILY-REBALANCED BENCHMARK
+    Compared over the same universe and period.
+{_fmt_metrics(benchmark, indent='    ')}
+
+[3] WALK-FORWARD (OUT-OF-SAMPLE)
 {_fmt_wf(wf)}
 
-[3] MONTE CARLO RISK ANALYSIS
+[4] MONTE CARLO RISK ANALYSIS
 {_fmt_mc(mc)}
 
-[4] INTERPRETATION
+[5] INTERPRETATION
     Verdict {verdict} means:
-    - CONFIRMED   : Strategy passes in-sample + walk-forward + risk checks. Strong candidate for real-money.
-    - CONDITIONAL : Mixed evidence. Paper-trade / use smaller size before deploying real capital.
-    - REJECTED    : Fails validation. Do not deploy without major changes.
+    - CONFIRMED   : Passed the configured historical checks; this is not a forecast or guarantee.
+    - CONDITIONAL : Mixed evidence; further testing and paper trading are recommended.
+    - REJECTED    : Did not pass the configured historical checks.
 
     Next steps:
-      - /optimize {universe[0] if universe else 'SYM'} to refine parameters (grid search)
-      - /evolve {universe[0] if universe else 'SYM'}  to evolve a family of strategies
-      - /query        to compare against previously saved strategies
+      - Compare the strategy with the benchmark and out-of-sample results.
+      - Paper trade and independently review before making investment decisions.
 """
     return header + sections
 

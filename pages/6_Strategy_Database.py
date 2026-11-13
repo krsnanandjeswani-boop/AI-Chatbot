@@ -50,25 +50,40 @@ else:
     selected = strategies[selected_idx]
     strat_id = selected.get("id")
     strat_json = selected.get("parameters", {})
+    if not isinstance(strat_json, dict):
+        st.error("This saved strategy is not a valid JSON object and cannot be loaded.")
+        st.stop()
+    strategy_universe = strat_json.get("universe")
+    if not isinstance(strategy_universe, list) or not strategy_universe:
+        strategy_universe = selected.get("symbol", "").split("+")
+    symbols_text = ",".join(str(symbol) for symbol in strategy_universe if str(symbol).strip())
     
     st.markdown("### Use this strategy")
     col1, col2, col3, col4 = st.columns(4)
     with col1:
         if st.button("Load for Backtest", width="stretch"):
             st.session_state["loaded_strategy"] = strat_json
-            st.success("Loaded. Go to Backtest Lab to run full validation.")
+            st.session_state["bt_symbols"] = symbols_text
+            st.session_state.pop("bt_strategy", None)
+            st.session_state.pop("bt_report", None)
+            st.switch_page("pages/2_Backtester.py")
     with col2:
         if st.button("Load for Optimizer", width="stretch"):
             st.session_state["loaded_strategy_opt"] = strat_json
-            st.success("Loaded. Go to Optimizer to run grid search.")
+            st.session_state["opt_symbols"] = symbols_text
+            st.session_state.pop("grid_results", None)
+            st.switch_page("pages/3_Optimizer.py")
     with col3:
         if st.button("Load for Evolution", width="stretch"):
             st.session_state["loaded_strategy_evo"] = strat_json
-            st.success("Loaded. Go to Genetic Evolution to run evolution.")
+            st.session_state["evo_symbols"] = symbols_text
+            st.session_state.pop("evolution_result", None)
+            st.switch_page("pages/4_Genetic_Evolution.py")
     with col4:
         if st.button("Load for Quick Test", width="stretch"):
             st.session_state["last_strategy"] = strat_json
-            st.success("Loaded. Go to Strategy Generator.")
+            st.session_state.pop("last_metrics", None)
+            st.switch_page("pages/1_Strategy_Generator.py")
     
     st.markdown("### Manage Strategy")
     m1, m2, m3 = st.columns([3, 1, 1])

@@ -7,7 +7,7 @@ from final import (
 from strategy_generator import generate_strategy
 from backtester import (
     fetch_price_data, evaluate_strategy, calculate_indicators,
-    run_full_backtest, get_default_universe
+    run_full_backtest, get_default_universe, validate_strategy_conditions
 )
 from optimizer import grid_optimize
 from strategy_database import save_strategy, query_strategies
@@ -106,6 +106,9 @@ def generate_price_chart(symbol, period="1y", indicators=True):
     return buf.getvalue()
 
 def generate_strategy_chart(symbol, strategy, period="5y"):
+    if validate_strategy_conditions(strategy):
+        return None
+
     df = fetch_price_data(symbol, period=period)
     if df is None or df.empty:
         return None

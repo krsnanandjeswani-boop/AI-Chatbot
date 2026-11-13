@@ -3,7 +3,12 @@ from io import BytesIO
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
 
-from backtester import fetch_price_data, calculate_indicators, evaluate_strategy
+from backtester import (
+    calculate_indicators,
+    evaluate_strategy,
+    fetch_price_data,
+    validate_strategy_conditions,
+)
 from nav import render_sidebar
 from ui_styles import QUANTBOT_ICON, apply_design_system, render_page_header
 
@@ -156,10 +161,14 @@ with tab2:
                 from strategy_generator import generate_strategy
                 with st.spinner("Generating strategy via LLM..."):
                     strategy = generate_strategy(strat_symbol.upper())
-            with st.spinner(f"Backtesting strategy on {strat_symbol.upper()}..."):
-                fig = plotly_strategy_chart(strat_symbol.upper(), strategy, strat_period)
-            if fig:
-                st.session_state["last_strategy"] = strategy
-                st.plotly_chart(fig, width="stretch")
+            errors = validate_strategy_conditions(strategy)
+            if errors:
+                st.error("This strategy cannot be charted: " + "; ".join(errors))
             else:
-                st.error("Failed to generate strategy chart.")
+                with st.spinner(f"Backtesting strategy on {strat_symbol.upper()}..."):
+                    fig = plotly_strategy_chart(strat_symbol.upper(), strategy, strat_period)
+                if fig:
+                    st.session_state["last_strategy"] = strategy
+                    st.plotly_chart(fig, width="stretch")
+                else:
+                    st.error("Failed to generate strategy chart.")

@@ -1,6 +1,6 @@
 import streamlit as st
 
-from backtester import run_full_backtest, get_default_universe
+from backtester import get_default_universe, normalize_universe, run_full_backtest
 from performance_report import format_report
 from strategy_generator import generate_strategy
 from strategy_database import save_strategy
@@ -19,34 +19,74 @@ render_page_header(
     "Validate strategy behavior across historical, out-of-sample, and simulated market conditions.",
 )
 
+loaded_strategy = st.session_state.get("loaded_strategy")
+if loaded_strategy is not None:
+    if not isinstance(loaded_strategy, dict):
+        st.error("The loaded strategy is invalid. Reload it from the Strategy Library.")
+        st.stop()
+    st.info(
+        f"Loaded from the Strategy Library: **{loaded_strategy.get('name', 'Unnamed strategy')}**. "
+        "The saved strategy will be validated instead of generating a new one."
+    )
+    with st.expander("Review loaded strategy"):
+        st.json(loaded_strategy)
+    if st.button("Clear loaded strategy", key="clear_loaded_backtest"):
+        st.session_state.pop("loaded_strategy", None)
+        st.session_state.pop("bt_strategy", None)
+        st.session_state.pop("bt_report", None)
+        st.session_state["bt_symbols"] = ""
+        st.rerun()
+
 col1, col2 = st.columns([2, 1])
 with col1:
-    symbol = st.text_input("Ticker / Universe", placeholder="e.g., SPY or AAPL,MSFT,NVDA (blank = AI chooses)")
+    placeholder = (
+        "Optional override, e.g. AAPL,MSFT"
+        if loaded_strategy
+        else "e.g., SPY or AAPL,MSFT,NVDA (blank = AI chooses)"
+    )
+    symbol = st.text_input("Ticker / Universe", placeholder=placeholder, key="bt_symbols")
 with col2:
     period = st.selectbox("Period", ["5y", "3y", "2y"], index=0)
 
-if st.button("Run Full Validation", type="primary", width="stretch"):
-    with st.spinner("Generating strategy and running full validation... This may take 60-90 seconds"):
+run_label = "Run Validation on Loaded Strategy" if loaded_strategy else "Generate Strategy and Run Validation"
+if st.button(run_label, type="primary", width="stretch"):
+    with st.spinner("Running full validation... This may take 60-90 seconds"):
         try:
-            if symbol.strip():
-                syms = [s.strip().upper() for s in symbol.split(",")]
-                strategy = generate_strategy(syms, question="Design a robust strategy for full validation")
+            if loaded_strategy:
+                strategy = dict(loaded_strategy)
             else:
-                strategy = generate_strategy(None, question="Design a robust portfolio strategy for full validation")
-            
+                syms = normalize_universe(symbol) if symbol.strip() else None
+                strategy = generate_strategy(
+                    syms,
+                    question="Design a robust strategy for full validation",
+                )
+
+            if not isinstance(strategy, dict):
+                raise ValueError("No valid strategy was produced.")
+            if loaded_strategy and not symbol.strip():
+                strategy_universe = normalize_universe(
+                    strategy.get("universe") or get_default_universe()
+                )
+            elif symbol.strip():
+                strategy_universe = normalize_universe(symbol)
+            else:
+                strategy_universe = normalize_universe(
+                    strategy.get("universe") or get_default_universe()
+                )
+            strategy["universe"] = strategy_universe
             st.session_state["bt_strategy"] = strategy
-            universe = strategy.get("universe", syms if symbol.strip() else get_default_universe())
-            
-            report = run_full_backtest(universe, strategy, period=period, mc_sims=1000)
-            
+            report = run_full_backtest(strategy_universe, strategy, period=period, mc_sims=1000)
+
             if report and "error" not in report:
                 st.session_state["bt_report"] = report
                 st.success("Validation complete")
                 st.rerun()
             else:
                 st.error(f"Validation failed: {report.get('error', 'Unknown error') if report else 'No result'}")
-        except Exception as e:
-            st.error(f"Error: {str(e)}")
+        except ValueError as error:
+            st.error(str(error))
+        except Exception as error:
+            st.error(f"Validation failed: {error}")
 
 if "bt_report" in st.session_state:
     report = st.session_state["bt_report"]
@@ -76,6 +116,22 @@ if "bt_report" in st.session_state:
             c2.metric("Sharpe", f"{is_m.get('sharpe',0):.2f}")
             c3.metric("Max DD", f"{is_m.get('max_drawdown',0):.2%}")
             c4.metric("Profit Factor", f"{is_m.get('profit_factor',0):.2f}")
+            benchmark = report.get("benchmark_metrics", {})
+            if "error" not in benchmark:
+                st.caption("Comparison against an equal-weight, daily-rebalanced benchmark over the same universe and period.")
+                b1, b2, b3, b4 = st.columns(4)
+                b1.metric(
+                    "Strategy CAGR vs benchmark",
+                    f"{is_m.get('cagr', 0):.2%}",
+                    delta=f"{is_m.get('cagr', 0) - benchmark.get('cagr', 0):+.2%}",
+                )
+                b2.metric("Benchmark CAGR", f"{benchmark.get('cagr', 0):.2%}")
+                b3.metric(
+                    "Strategy Sharpe vs benchmark",
+                    f"{is_m.get('sharpe', 0):.2f}",
+                    delta=f"{is_m.get('sharpe', 0) - benchmark.get('sharpe', 0):+.2f}",
+                )
+                b4.metric("Benchmark Sharpe", f"{benchmark.get('sharpe', 0):.2f}")
         else:
             st.warning(is_m["error"])
     

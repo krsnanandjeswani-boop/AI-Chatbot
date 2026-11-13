@@ -44,6 +44,50 @@ def get_default_universe():
     return list(DEFAULT_UNIVERSE)
 
 
+def normalize_universe(symbols):
+    """Normalize and validate a ticker list before using it in a backtest."""
+    if isinstance(symbols, str):
+        raw_symbols = symbols.split(",")
+    elif symbols is None:
+        raw_symbols = []
+    else:
+        raw_symbols = list(symbols)
+
+    if not raw_symbols or any(not str(symbol).strip() for symbol in raw_symbols):
+        raise ValueError("Enter one or more ticker symbols, separated by commas.")
+
+    normalized = [str(symbol).strip().upper() for symbol in raw_symbols]
+    invalid = [symbol for symbol in normalized if not re.fullmatch(r"[A-Z0-9.^=_-]{1,20}", symbol)]
+    if invalid:
+        raise ValueError(f"Invalid ticker symbol(s): {', '.join(invalid)}")
+    if len(set(normalized)) != len(normalized):
+        raise ValueError("Remove duplicate ticker symbols from the universe.")
+
+    return normalized
+
+
+def validate_strategy_conditions(strategy):
+    """Return rules that the backtester cannot evaluate instead of ignoring them."""
+    if not isinstance(strategy, dict):
+        return ["Strategy must be a JSON object."]
+
+    errors = []
+    for key in ("entry", "exit"):
+        conditions = strategy.get(key, [])
+        if not isinstance(conditions, (list, tuple)):
+            errors.append(f"{key.title()} rules must be a list.")
+            continue
+
+        for condition in conditions:
+            normalized = re.sub(r"\s+", "", str(condition)).upper()
+            if not any(re.fullmatch(pattern, normalized) for pattern in SUPPORTED_CONDITION_PATTERNS):
+                errors.append(f"Unsupported {key} rule: {condition}")
+            elif any(int(period) < 1 for period in re.findall(r"\((\d+)\)", normalized)):
+                errors.append(f"Indicator periods must be positive in rule: {condition}")
+
+    return errors
+
+
 def calculate_indicators(df):
     df = df.copy()
     df["SMA_20"] = df["Close"].rolling(20).mean()
@@ -78,7 +122,7 @@ def evaluate_condition(df, cond):
     c = str(cond).strip()
 
     # SMA(n1) > SMA(n2) or SMA(n1) < SMA(n2)
-    m = re.search(r"SMA\((\d+)\)\s*([<>])\s*SMA\((\d+)\)", c)
+    m = re.search(r"SMA\((\d+)\)\s*([<>])\s*SMA\((\d+)\)", c, re.IGNORECASE)
     if m:
         n1, op, n2 = int(m.group(1)), m.group(2), int(m.group(3))
         col1, col2 = f"SMA_{n1}", f"SMA_{n2}"
@@ -90,7 +134,7 @@ def evaluate_condition(df, cond):
         return (s1 > s2) if op == ">" else (s1 < s2)
 
     # Close > SMA(n) or Close < SMA(n)
-    m = re.search(r"Close\s*([<>])\s*SMA\((\d+)\)", c)
+    m = re.search(r"Close\s*([<>])\s*SMA\((\d+)\)", c, re.IGNORECASE)
     if m:
         op, n = m.group(1), int(m.group(2))
         col = f"SMA_{n}"
@@ -99,7 +143,7 @@ def evaluate_condition(df, cond):
         return (df["Close"] > df[col]) if op == ">" else (df["Close"] < df[col])
 
     # EMA(n1) > EMA(n2) or EMA(n1) < EMA(n2)
-    m = re.search(r"EMA\((\d+)\)\s*([<>])\s*EMA\((\d+)\)", c)
+    m = re.search(r"EMA\((\d+)\)\s*([<>])\s*EMA\((\d+)\)", c, re.IGNORECASE)
     if m:
         n1, op, n2 = int(m.group(1)), m.group(2), int(m.group(3))
         col1, col2 = f"EMA_{n1}", f"EMA_{n2}"
@@ -111,7 +155,7 @@ def evaluate_condition(df, cond):
         return (s1 > s2) if op == ">" else (s1 < s2)
 
     # RSI > x / RSI < x  / RSI(n) > x / RSI(n) < x
-    m = re.search(r"RSI(?:\((\d+)\))?\s*([<>])\s*(\d+)", c)
+    m = re.search(r"RSI(?:\((\d+)\))?\s*([<>])\s*(\d+)", c, re.IGNORECASE)
     if m:
         n = int(m.group(1)) if m.group(1) else 14
         op, val = m.group(2), int(m.group(3))
@@ -131,7 +175,7 @@ def evaluate_condition(df, cond):
         return (rsi > val) if op == ">" else (rsi < val)
 
     # MACD > MACD_signal / MACD < MACD_signal
-    m = re.search(r"MACD\s*([<>])\s*MACD_signal", c)
+    m = re.search(r"MACD\s*([<>])\s*MACD_signal", c, re.IGNORECASE)
     if m:
         op = m.group(1)
         if "MACD" not in df.columns:
@@ -142,7 +186,7 @@ def evaluate_condition(df, cond):
         return (df["MACD"] > df["MACD_signal"]) if op == ">" else (df["MACD"] < df["MACD_signal"])
 
     # Close > BB_upper / Close < BB_lower
-    m = re.search(r"Close\s*([<>])\s*BB_(upper|lower)", c)
+    m = re.search(r"Close\s*([<>])\s*BB_(upper|lower)", c, re.IGNORECASE)
     if m:
         op, band = m.group(1), m.group(2)
         if "BB_upper" not in df.columns:
@@ -156,7 +200,7 @@ def evaluate_condition(df, cond):
             return (df["Close"] > df["BB_lower"]) if op == ">" else (df["Close"] < df["BB_lower"])
 
     # Volume > Volume_SMA(n)
-    m = re.search(r"Volume\s*>\s*Volume_SMA\((\d+)\)", c)
+    m = re.search(r"Volume\s*>\s*Volume_SMA\((\d+)\)", c, re.IGNORECASE)
     if m:
         n = int(m.group(1))
         col = f"Volume_SMA_{n}"
@@ -169,6 +213,10 @@ def evaluate_condition(df, cond):
 
 def evaluate_strategy(df, strategy, inplace=False):
     """Evaluate a strategy on a single-symbol df. Returns df with position + strategy_ret."""
+    errors = validate_strategy_conditions(strategy)
+    if errors:
+        raise ValueError("; ".join(errors))
+
     if not inplace:
         df = df.copy()
     df = calculate_indicators(df)
@@ -240,6 +288,14 @@ def compute_metrics(df):
 
 
 def backtest_strategy(symbol, strategy, period="5y"):
+    errors = validate_strategy_conditions(strategy)
+    if errors:
+        return {"error": "; ".join(errors)}
+    try:
+        symbol = normalize_universe([symbol])[0]
+    except ValueError as error:
+        return {"error": str(error)}
+
     df = fetch_price_data(symbol, period=period)
     if df is None or df.empty:
         return {"error": f"No data for {symbol}"}
@@ -266,6 +322,15 @@ def _load_portfolio_prices(universe, period="5y"):
 
 def backtest_portfolio(universe, strategy, period="5y"):
     """Equal-weight, rebalanced-daily portfolio backtest across the universe."""
+    try:
+        universe = normalize_universe(universe)
+    except ValueError as error:
+        return {"error": str(error)}
+
+    errors = validate_strategy_conditions(strategy)
+    if errors:
+        return {"error": "; ".join(errors)}
+
     frame = _load_portfolio_prices(universe, period=period)
     if frame is None or frame.empty:
         return {"error": "No data for universe"}
@@ -297,8 +362,14 @@ def walkforward_test(symbols, strategy, folds=4, period="6y"):
     optimizes nothing (uses the given strategy as-is) and evaluates on the
     out-of-sample next window. Aggregates OOS metrics.
     """
-    if isinstance(symbols, str):
-        symbols = [symbols]
+    try:
+        symbols = normalize_universe(symbols)
+    except ValueError as error:
+        return {"error": str(error)}
+
+    errors = validate_strategy_conditions(strategy)
+    if errors:
+        return {"error": "; ".join(errors)}
 
     frame = _load_portfolio_prices(symbols, period=period)
     if frame is None or frame.empty:
@@ -367,8 +438,10 @@ def _monte_carlo(df, n_sims=1000):
 
 def run_full_backtest(universe, strategy, period="5y", mc_sims=1000):
     """Full validation pipeline: in-sample backtest + walk-forward OOS + Monte Carlo + verdict."""
-    if isinstance(universe, str):
-        universe = [universe]
+    try:
+        universe = normalize_universe(universe)
+    except ValueError as error:
+        return {"error": str(error)}
 
     in_sample = backtest_portfolio(universe, strategy, period=period)
     if "error" in in_sample:
@@ -377,8 +450,18 @@ def run_full_backtest(universe, strategy, period="5y", mc_sims=1000):
     # Monte Carlo on the in-sample portfolio series
     frame = _load_portfolio_prices(universe, period=period)
     mc = {"error": "No MC data"}
+    benchmark = {"error": "No benchmark data"}
     if frame is not None and not frame.empty:
         rets = frame.pct_change()
+        benchmark_returns = rets.mean(axis=1)
+        benchmark = compute_metrics(
+            pd.DataFrame(
+                {
+                    "strategy_ret": benchmark_returns,
+                    "position": pd.Series(1.0, index=frame.index),
+                }
+            )
+        )
         signals = {}
         for sym in frame.columns:
             df = fetch_price_data(sym, period=period)
@@ -396,6 +479,7 @@ def run_full_backtest(universe, strategy, period="5y", mc_sims=1000):
         "strategy": strategy,
         "universe": universe,
         "in_sample_metrics": in_sample,
+        "benchmark_metrics": benchmark,
         "walk_forward": wf,
         "monte_carlo": mc,
         "verdict": verdict,
@@ -433,13 +517,13 @@ def _verdict(in_sample, wf, mc):
 
     if score >= 2 and is_sharpe >= 1.0:
         verdict = "CONFIRMED"
-        reason = "Passes in-sample, walk-forward, and risk checks. Strong candidate for real-money deployment (subject to further due diligence)."
+        reason = "Passes in-sample, walk-forward, and risk checks. Continue with paper trading and independent review."
     elif score >= 1 and is_sharpe >= 0.5:
         verdict = "CONDITIONAL"
-        reason = "Mixed evidence. Use smaller size / paper trade before deploying real capital."
+        reason = "Mixed evidence. Further testing and paper trading are recommended."
     else:
         verdict = "REJECTED"
-        reason = "Fails validation. Does not pass the bar for real-money deployment without major changes."
+        reason = "The strategy did not pass the configured historical validation checks."
 
     return verdict, f"{reason} | {'; '.join(reasons)}"
 
