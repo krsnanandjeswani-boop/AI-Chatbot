@@ -33,7 +33,6 @@ st.markdown("""
 <style>
 #MainMenu {visibility: hidden;}
 footer {visibility: hidden;}
-header {visibility: hidden;}
 .block-container {padding-top: 2rem; max-width: 900px;}
 h1 {font-weight: 600; letter-spacing: -0.02em;}
 .stChatMessage {border-radius: 8px; border: 1px solid #2A2A2A;}

@@ -242,7 +242,7 @@ def generate_css() -> str:
 }}
 
 /* ─── Global Reset & Base ────────────────────────────────── */
-#MainMenu, footer, header {{ visibility: hidden; }}
+#MainMenu, footer {{ visibility: hidden; }}
 
 html {{
     scroll-behavior: smooth;
@@ -813,20 +813,6 @@ kbd {{
 def apply_design_system():
     """Apply the design system CSS to the current Streamlit page."""
     st.markdown(generate_css(), unsafe_allow_html=True)
-    st.markdown("""
-    <style>
-        [data-testid="collapsedControl"] {
-            display: none !important;
-        }
-        button[title="Close sidebar"],
-        button[aria-label="Close sidebar"] {
-            display: none !important;
-        }
-        section[data-testid="stSidebar"] > div:first-child > button {
-            display: none !important;
-        }
-    </style>
-    """, unsafe_allow_html=True)
 
 
 def page_config(title: str, icon: str = "⚡", layout: str = "wide", sidebar: str = "expanded"):

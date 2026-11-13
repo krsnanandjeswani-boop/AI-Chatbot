@@ -55,10 +55,6 @@ def apply_sidebar_css():
             margin: 1rem 0.5rem !important;
         }
         
-        [data-testid="collapsedControl"] {
-            display: none !important;
-        }
-        
         [data-testid="stSidebarUserContent"] {
             padding-top: 1.5rem !important;
         }
