@@ -11,7 +11,7 @@ st.set_page_config(
     initial_sidebar_state="expanded",
 )
 
-apply_design_system()
+apply_design_system("overview")
 render_sidebar()
 
 st.markdown(

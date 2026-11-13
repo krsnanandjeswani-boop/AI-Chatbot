@@ -8,7 +8,7 @@ from ui_styles import QUANTBOT_ICON, apply_design_system, render_page_header
 
 st.set_page_config(page_title="Strategy Library — Quantbot", page_icon=QUANTBOT_ICON, layout="wide")
 
-apply_design_system()
+apply_design_system("strategy-library")
 render_sidebar()
 
 render_page_header(

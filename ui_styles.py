@@ -60,6 +60,17 @@ COLORS = {
     "dark_accent_border": "rgba(214, 160, 108, 0.35)",
 }
 
+BACKGROUND_VARIANTS = {
+    "overview": ("88% -12%", "12% 88%", "44s"),
+    "strategy-generator": ("18% 5%", "90% 88%", "50s"),
+    "backtest-lab": ("78% 24%", "12% 92%", "48s"),
+    "grid-optimizer": ("14% 20%", "86% 82%", "40s"),
+    "genetic-evolution": ("48% 108%", "4% 16%", "54s"),
+    "market-charts": ("86% 12%", "20% 94%", "42s"),
+    "strategy-library": ("24% 94%", "90% 8%", "58s"),
+    "ai-research": ("68% -8%", "14% 78%", "46s"),
+}
+
 # Spacing scale (based on 4px unit)
 SPACE = {
     "0": "0",
@@ -140,8 +151,11 @@ BREAKPOINTS = {
 
 # ─── CSS Generation ──────────────────────────────────────────────────────
 
-def generate_css() -> str:
+def generate_css(page_variant: str = "overview") -> str:
     """Generate the complete CSS for the design system."""
+    glow_one, glow_two, motion_duration = BACKGROUND_VARIANTS.get(
+        page_variant, BACKGROUND_VARIANTS["overview"]
+    )
     return f"""
 <style>
 /* ============================================================
@@ -179,6 +193,9 @@ def generate_css() -> str:
     --color-info: {COLORS['info']};
     --color-info-bg: {COLORS['info_bg']};
     --color-info-border: {COLORS['info_border']};
+    --ambient-glow-one: {glow_one};
+    --ambient-glow-two: {glow_two};
+    --ambient-motion-duration: {motion_duration};
 
     --font-family: {TYPOGRAPHY['font_family']};
     --font-mono: {TYPOGRAPHY['font_mono']};
@@ -254,13 +271,26 @@ html {{
     max-width: 1200px !important;
     font-family: var(--font-family);
     color: var(--color-text-primary);
-    background-color: var(--color-bg-primary);
+    background-color: transparent;
 }}
 
 .stApp {{
+    position: relative;
+    isolation: isolate;
+    background-color: var(--color-bg-primary);
+}}
+
+.stApp::before {{
+    content: "";
+    position: fixed;
+    inset: -14vh -10vw;
+    z-index: -1;
+    pointer-events: none;
     background:
-        radial-gradient(900px circle at 84% -14%, rgba(214, 160, 108, 0.07), transparent 42%),
-        var(--color-bg-primary);
+        radial-gradient(760px circle at var(--ambient-glow-one), rgba(214, 160, 108, 0.13), transparent 64%),
+        radial-gradient(560px circle at var(--ambient-glow-two), rgba(214, 160, 108, 0.065), transparent 70%);
+    animation: ambientDrift var(--ambient-motion-duration) ease-in-out infinite alternate;
+    will-change: transform;
 }}
 
 .block-container {{
@@ -939,6 +969,10 @@ kbd {{
 @keyframes spin {{
     to {{ transform: rotate(360deg); }}
 }}
+@keyframes ambientDrift {{
+    from {{ transform: translate3d(-1.2%, -0.8%, 0) scale(1); }}
+    to {{ transform: translate3d(1.2%, 0.8%, 0) scale(1.035); }}
+}}
 
 .animate-fade-in {{ animation: fadeIn var(--transition-slow) ease-out; }}
 .animate-slide-in {{ animation: slideIn var(--transition-normal) ease-out; }}
@@ -992,9 +1026,9 @@ kbd {{
 
 # ─── Helper Functions ────────────────────────────────────────────────────
 
-def apply_design_system():
+def apply_design_system(page_variant: str = "overview") -> None:
     """Apply the design system CSS to the current Streamlit page."""
-    st.markdown(generate_css(), unsafe_allow_html=True)
+    st.markdown(generate_css(page_variant), unsafe_allow_html=True)
 
 
 def render_page_header(eyebrow: str, title: str, description: str) -> None:

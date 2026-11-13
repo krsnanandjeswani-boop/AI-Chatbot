@@ -45,7 +45,7 @@ CORE DIRECTIVES:
 
 st.set_page_config(page_title="AI Research — Quantbot", page_icon=QUANTBOT_ICON, layout="wide", initial_sidebar_state="expanded")
 
-apply_design_system()
+apply_design_system("ai-research")
 render_sidebar()
 
 if not GROQ_API_KEY:

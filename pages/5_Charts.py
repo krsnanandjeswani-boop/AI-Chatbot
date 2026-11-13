@@ -14,7 +14,7 @@ from ui_styles import QUANTBOT_ICON, apply_design_system, render_page_header
 
 st.set_page_config(page_title="Market Charts — Quantbot", page_icon=QUANTBOT_ICON, layout="wide")
 
-apply_design_system()
+apply_design_system("market-charts")
 render_sidebar()
 
 render_page_header(

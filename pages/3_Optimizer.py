@@ -30,7 +30,7 @@ def parse_integer_list(text, label, minimum, maximum):
 
 st.set_page_config(page_title="Grid Optimizer — Quantbot", page_icon=QUANTBOT_ICON, layout="wide")
 
-apply_design_system()
+apply_design_system("grid-optimizer")
 render_sidebar()
 
 render_page_header(
